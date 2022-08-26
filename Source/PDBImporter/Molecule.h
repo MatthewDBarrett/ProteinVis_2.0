@@ -72,6 +72,8 @@ public:
 	UPROPERTY()
 	AActor* cylinderISMA;
 
+	void ColourChain();
+
 	void SetAtomTypes();
 
 	void SetAtomColours();
@@ -95,6 +97,12 @@ public:
 	double connectionThickness = 1.0f;
 
 	bool renderConnections = true;
+
+	UFUNCTION(BlueprintCallable)
+	void SetRenderConnections(bool render);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetRenderConnections();
 	
 	bool renderHETAtoms = false;
 

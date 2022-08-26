@@ -213,6 +213,19 @@ void AMolecule::SetAtomColours() {
 	atomColours.Add(FVector(224, 102, 51));			//Fe
 }
 
+void AMolecule::ColourChain() {
+	FVector randomColour = FVector(FMath::RandRange(1, 255), FMath::RandRange(1, 255), FMath::RandRange(1, 255));
+	//UE_LOG(LogTemp, Warning, TEXT("R: %d G: %d B: % d"), randomColour.X, randomColour.Y, randomColour.Z);
+
+	FVector newColour;
+
+	int32 count = 0;
+	for (FVector colour : atomColours) {
+		atomColours[count] = randomColour;
+		count++;
+	}
+}
+
 void AMolecule::SpawnTempAtoms() {
 	for (Atom atom : atoms) {
 		FVector position = FVector(atom.GetXPos() * simulationScale, atom.GetYPos() * simulationScale, atom.GetZPos() * simulationScale);
@@ -370,6 +383,7 @@ void AMolecule::ConvertMolecule(TArray<FString> strings) {
 
 	this->SetAtomTypes();
 	this->SetAtomColours();
+	this->ColourChain();
 
 	for (int32 i = 0; i < strings.Num(); i++) {
 		if (strings[i].Contains("ATOM") || strings[i].Contains("ANI@SOU")) {
@@ -581,6 +595,10 @@ void AMolecule::SetProteinCentre() {
 
 	proteinCentre = sumVector;
 }
+
+void AMolecule::SetRenderConnections(bool render) { renderConnections = render; }
+
+bool AMolecule::GetRenderConnections() { return renderConnections; }
 
 
 
