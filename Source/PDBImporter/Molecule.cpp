@@ -351,6 +351,80 @@ void AMolecule::ConvertPDB(FString fileName) {
 	//return TArray<FVector>();
 }
 
+void AMolecule::ConvertMolecule(TArray<FString> strings) {
+
+	FActorSpawnParameters SpawnParams;
+	FVector pos = FVector(0, 0, 0);
+	FRotator rot = FRotator(0, 0, 0);
+
+	instancedStaticMeshActor = GetWorld()->SpawnActor<AActor>(StaticMeshToSpawn, pos, rot, SpawnParams);
+	cylinderISMA = GetWorld()->SpawnActor<AActor>(CylinderStaticMeshToSpawn, pos, rot, SpawnParams);
+
+	meshPointer = Cast<AInstancedStaticMeshActor>(instancedStaticMeshActor);
+	cylinderMeshPointer = Cast<ACylinderISMA>(cylinderISMA);
+
+	//if (molIndex != NULL) {
+	meshPointer->SetIndex(molIndex);
+	cylinderMeshPointer->SetIndex(molIndex);
+	//}
+
+	this->SetAtomTypes();
+	this->SetAtomColours();
+
+	for (int32 i = 0; i < strings.Num(); i++) {
+		if (strings[i].Contains("ATOM") || strings[i].Contains("ANI@SOU")) {
+			if (strings[i + 1].IsNumeric()) {
+				for (int j = 1; j < 7; j++) {
+
+					FString sample = strings[i + j];
+					std::string sampleString = std::string(TCHAR_TO_UTF8(*sample));
+
+					if (!is_number(sampleString)) {
+						FString sample2 = strings[i + j + 1];
+						std::string sampleString2 = std::string(TCHAR_TO_UTF8(*sample2));
+
+						if (has_any_digits(sampleString2)) {
+							FString elementName;
+
+							for (int o = 0; o < 10; o++) {
+								if (strings[i + j + o].Contains("ATOM") || strings[i + j + o].Contains("ANISOU") ||
+									strings[i + j + o].Contains("HETATM") || strings[i + j + o].Contains("TER")) {
+									elementName = strings[i + j + o - 1];
+									break;
+								}
+							}
+
+							double xPos = FCString::Atof(*strings[i + j + 2]);
+							double yPos = FCString::Atof(*strings[i + j + 3]);
+							double zPos = FCString::Atof(*strings[i + j + 4]);
+
+							Atom tempAtom = Atom(strings[i], FCString::Atoi(*strings[i + 1]), xPos, yPos, zPos, elementName);
+
+							atoms.Add(tempAtom);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	this->SetAtomSizes();
+	this->SetProteinCentre();
+
+	if (renderConnections) {
+		this->SpawnTempAtoms();
+		this->SpawnConnections();
+		this->RemoveTempAtoms();
+		//this->CreateNonStandardConnections();
+	}
+
+	this->SpawnAtoms();
+
+	MoleculeCreated = true;
+}
+
 float AMolecule::GetProteinHeight() {
 	float minHeight = 10000;
 	float maxHeight = 0;
@@ -386,6 +460,8 @@ void AMolecule::SpawnAtoms() {
 			meshPointer->InstanceAtom(transform);
 
 			int32 atomIndex = atomTypes.Find(atom.GetElementSymbol());
+
+			UE_LOG(LogTemp, Warning, TEXT("Index: %d"), atomIndex);
 
 			if ( (atomIndex - 1) < atomColours.Num() ) {
 				FVector atomColour = atomColours[atomIndex];

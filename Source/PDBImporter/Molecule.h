@@ -43,6 +43,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetProteinHeight();
 
+	void ConvertMolecule(TArray<FString> strings);
+
 	void SpawnAtoms();
 
 	void SpawnSphere(FVector position, double size, FString atomName);
