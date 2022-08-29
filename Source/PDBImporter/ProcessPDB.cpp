@@ -50,7 +50,7 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 
 				moleculePointer->SetAtomSize(1.5);			//standard 0.7f
 
-				moleculePointer->ConvertMolecule(moleculeStrings);
+				moleculePointer->ConvertMolecule(moleculeStrings, colours[molecules.Num()]);
 
 				molecules.Add(moleculeActor);
 
@@ -68,6 +68,8 @@ void AProcessPDB::SetFolder(FString folder) {
 	else
 		folderName = "";
 }
+
+void AProcessPDB::setFixedColours(TArray<FVector> fixedColours) { colours = fixedColours; }
 
 void AProcessPDB::BeginPlay(){
 	Super::BeginPlay();	

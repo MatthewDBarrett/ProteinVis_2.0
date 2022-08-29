@@ -213,15 +213,10 @@ void AMolecule::SetAtomColours() {
 	atomColours.Add(FVector(224, 102, 51));			//Fe
 }
 
-void AMolecule::ColourChain() {
-	FVector randomColour = FVector(FMath::RandRange(1, 255), FMath::RandRange(1, 255), FMath::RandRange(1, 255));
-	//UE_LOG(LogTemp, Warning, TEXT("R: %d G: %d B: % d"), randomColour.X, randomColour.Y, randomColour.Z);
-
-	FVector newColour;
-
+void AMolecule::ColourChain(FVector colour) {
 	int32 count = 0;
-	for (FVector colour : atomColours) {
-		atomColours[count] = randomColour;
+	for (FVector originalColour : atomColours) {
+		atomColours[count] = colour;
 		count++;
 	}
 }
@@ -364,7 +359,7 @@ void AMolecule::ConvertPDB(FString fileName) {
 	//return TArray<FVector>();
 }
 
-void AMolecule::ConvertMolecule(TArray<FString> strings) {
+void AMolecule::ConvertMolecule(TArray<FString> strings, FVector molColour) {
 
 	FActorSpawnParameters SpawnParams;
 	FVector pos = FVector(0, 0, 0);
@@ -383,7 +378,7 @@ void AMolecule::ConvertMolecule(TArray<FString> strings) {
 
 	this->SetAtomTypes();
 	this->SetAtomColours();
-	this->ColourChain();
+	this->ColourChain(molColour);
 
 	for (int32 i = 0; i < strings.Num(); i++) {
 		if (strings[i].Contains("ATOM") || strings[i].Contains("ANI@SOU")) {

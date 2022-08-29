@@ -37,6 +37,11 @@ public:
 
 	FString folderName;
 
+	UFUNCTION(BlueprintCallable)
+	void setFixedColours(TArray<FVector> fixedColours);
+
+	TArray<FVector> colours;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

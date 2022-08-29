@@ -43,7 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetProteinHeight();
 
-	void ConvertMolecule(TArray<FString> strings);
+	void ConvertMolecule(TArray<FString> strings, FVector molColour);
 
 	void SpawnAtoms();
 
@@ -72,7 +72,7 @@ public:
 	UPROPERTY()
 	AActor* cylinderISMA;
 
-	void ColourChain();
+	void ColourChain(FVector colour);
 
 	void SetAtomTypes();
 
