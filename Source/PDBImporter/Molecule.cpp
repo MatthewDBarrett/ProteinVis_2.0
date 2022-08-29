@@ -475,8 +475,6 @@ void AMolecule::SpawnAtoms() {
 
 			int32 atomIndex = atomTypes.Find(atom.GetElementSymbol());
 
-			UE_LOG(LogTemp, Warning, TEXT("Index: %d"), atomIndex);
-
 			if ( (atomIndex - 1) < atomColours.Num() ) {
 				FVector atomColour = atomColours[atomIndex];
 

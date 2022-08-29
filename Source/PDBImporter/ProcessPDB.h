@@ -32,6 +32,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetMolecules();
 
+	UFUNCTION(BlueprintCallable)
+	void SetFolder(FString folder);
+
+	FString folderName;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

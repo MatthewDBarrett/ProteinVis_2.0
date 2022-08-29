@@ -12,7 +12,8 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 	IPlatformFile& file = FPlatformFileManager::Get().GetPlatformFile();
 
 	if (file.CreateDirectory(*directory)) {
-		FString myFile = directory + "/" + "/PDB_Files/" + fileName + ".pdb";
+
+		FString myFile = directory + "/" + "/PDB_Files/" + folderName + fileName + ".pdb";
 		FFileHelper::LoadFileToString(atomData, *myFile);
 
 		TArray<FString> stringRecords;
@@ -26,7 +27,19 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 
 			moleculeStrings.Add(segment);
 
-			if (segment.Contains("TER") && segment.Len() <= 5) {
+			if (segment.Contains("TER") && segment.Contains("\n") && !segment.Contains("MAS")) {
+
+				//int32 chainSize = moleculeStrings.Num()-1;
+				//
+				//UE_LOG(LogTemp, Warning, TEXT("0:      %s"), *moleculeStrings[0]);
+				//UE_LOG(LogTemp, Warning, TEXT("1:      %s"), *moleculeStrings[1]);
+				//UE_LOG(LogTemp, Warning, TEXT("2:      %s"), *moleculeStrings[2]);
+				//UE_LOG(LogTemp, Warning, TEXT("3:      %s"), *moleculeStrings[3]);
+
+				//UE_LOG(LogTemp, Warning, TEXT("%d -3:  %s"), chainSize, *moleculeStrings[chainSize-3]);
+				//UE_LOG(LogTemp, Warning, TEXT("%d -2:  %s"), chainSize, *moleculeStrings[chainSize -2]);
+				//UE_LOG(LogTemp, Warning, TEXT("%d -1:  %s"), chainSize, *moleculeStrings[chainSize -1]);
+				//UE_LOG(LogTemp, Warning, TEXT("%d :    %s"), chainSize, *moleculeStrings[chainSize]);
 
 				FActorSpawnParameters SpawnParams;
 				FVector pos = FVector(0, 0, 0);
@@ -35,7 +48,7 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 				moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
 				moleculePointer = Cast<AMolecule>(moleculeActor);
 
-				moleculePointer->SetAtomSize(0.7f);
+				moleculePointer->SetAtomSize(1.5);			//standard 0.7f
 
 				moleculePointer->ConvertMolecule(moleculeStrings);
 
@@ -48,6 +61,13 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 }
 
 TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
+
+void AProcessPDB::SetFolder(FString folder) {
+	if (!folder.IsEmpty())
+		folderName = folder + "/";
+	else
+		folderName = "";
+}
 
 void AProcessPDB::BeginPlay(){
 	Super::BeginPlay();	
