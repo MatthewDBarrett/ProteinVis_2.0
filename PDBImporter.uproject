@@ -44,6 +44,10 @@
 		{
 			"Name": "BlueprintFileUtils",
 			"Enabled": true
+		},
+		{
+			"Name": "EigenPlugin",
+			"Enabled": false
 		}
 	]
 }
