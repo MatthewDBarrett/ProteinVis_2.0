@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PointMatch.h"
 #include "Molecule.h"
 #include "ProcessPDB.generated.h"
 
@@ -41,6 +42,10 @@ public:
 	void setFixedColours(TArray<FVector> fixedColours);
 
 	TArray<FVector> colours;
+
+	void PointMatchTest();
+
+	PointMatch pointMatch;
 
 protected:
 	// Called when the game starts or when spawned
