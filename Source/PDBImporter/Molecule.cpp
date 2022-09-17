@@ -437,6 +437,43 @@ void AMolecule::ConvertMolecule(TArray<FString> strings, FVector molColour) {
 	MoleculeCreated = true;
 }
 
+void AMolecule::CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour) {
+	FActorSpawnParameters SpawnParams;
+	FVector pos = FVector(0, 0, 0);
+	FRotator rot = FRotator(0, 0, 0);
+
+	instancedStaticMeshActor = GetWorld()->SpawnActor<AActor>(StaticMeshToSpawn, pos, rot, SpawnParams);
+	cylinderISMA = GetWorld()->SpawnActor<AActor>(CylinderStaticMeshToSpawn, pos, rot, SpawnParams);
+
+	meshPointer = Cast<AInstancedStaticMeshActor>(instancedStaticMeshActor);
+	cylinderMeshPointer = Cast<ACylinderISMA>(cylinderISMA);
+
+	//if (molIndex != NULL) {
+	meshPointer->SetIndex(molIndex);
+	cylinderMeshPointer->SetIndex(molIndex);
+	//}
+
+	this->SetAtomTypes();
+	this->SetAtomColours();
+	this->ColourChain(molColour);
+
+	atoms = originalAtoms;
+
+	this->SetAtomSizes();
+	this->SetProteinCentre();
+
+	if (renderConnections) {
+		this->SpawnTempAtoms();
+		this->SpawnConnections();
+		this->RemoveTempAtoms();
+		//this->CreateNonStandardConnections();
+	}
+
+	this->SpawnAtoms();
+
+	MoleculeCreated = true;
+}
+
 float AMolecule::GetProteinHeight() {
 	float minHeight = 10000;
 	float maxHeight = 0;
@@ -481,6 +518,7 @@ void AMolecule::SpawnAtoms() {
 				meshPointer->SetCustomData(count, 1, atomColour.Y / 255, true);
 
 				meshPointer->SetCustomData(count, 2, atomColour.Z / 255, true);
+
 			}
 		}
 		//UE_LOG(LogTemp, Log, TEXT("name: %s"), *test);	

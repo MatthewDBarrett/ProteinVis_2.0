@@ -52,6 +52,8 @@ public:
 
 	void ConvertMolecule(TArray<FString> strings, FVector molColour);
 
+	void CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour);
+
 	void SpawnAtoms();
 
 	void SpawnSphere(FVector position, double size, FString atomName);

@@ -53,8 +53,6 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 	}
 }
 
-TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
-
 void AProcessPDB::SetFolder(FString folder) {
 	if (!folder.IsEmpty())
 		folderName = folder + "/";
@@ -252,3 +250,78 @@ void AProcessPDB::BeginPlay(){
 void AProcessPDB::Tick(float DeltaTime){
 	Super::Tick(DeltaTime);
 }
+
+TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
+
+void AProcessPDB::AlignMolecules(AProcessPDB* fixedMolecules) {
+    TArray<AActor*> fixedMols = fixedMolecules->GetMolecules();
+    TArray<AActor*> Mols = this->GetMolecules();
+
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+
+    TArray<int32> atomCounts;
+
+    for (AActor* fixedMol : fixedMols) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+        for (std::vector<double> pos : atomPositions)
+            fixedMolsPos.push_back( pos );
+    }
+
+    for (AActor* Mol : Mols) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+        atomCounts.Add( atomPositions.size() );
+        for (std::vector<double> pos : atomPositions)
+            molsPos.push_back( pos );
+    }
+
+    PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+    //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
+
+    int32 nextIndex = 0;
+    for (int i = 0; i < Mols.Num(); i++) {
+        std::vector<std::vector<double>> atomPositions;
+
+        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+            atomPositions.push_back(molsPos[j]);
+        }
+
+        this->UpdateMolecule(Cast<AMolecule>(Mols[i]), atomPositions, i);
+        nextIndex += atomCounts[i];
+    }
+}
+
+void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex){
+    for (int i = 0; i < mol->atoms.Num(); i++)
+        mol->atoms[i].SetAtomPosition( atomPositions[i] );
+
+    //mol->meshPointer->RemoveAllAtoms();
+
+    FActorSpawnParameters SpawnParams;
+    FVector pos = FVector(0, 0, 0);
+    FRotator rot = FRotator(0, 0, 0);
+
+    moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
+    moleculePointer = Cast<AMolecule>(moleculeActor);
+
+    moleculePointer->SetAtomSize(1.5);			//standard 0.7f
+
+    moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex]);
+
+    moleculePointer->SetPosition(FVector(12000, 0, 0));
+
+    //mol->ColourChain( colours[molIndex] );
+
+    /*for (int i = 0; i < atomPositions.size(); i++) {
+        mol->meshPointer->SetCustomData(i, 0, colours[molIndex].X / 255, true);
+
+        mol->meshPointer->SetCustomData(i, 1, colours[molIndex].Y / 255, true);
+
+        mol->meshPointer->SetCustomData(i, 2, colours[molIndex].Z / 255, true);
+    }*/
+
+    /*mol->SetProteinCentre();
+
+    mol->SpawnAtoms();*/
+}
+
+

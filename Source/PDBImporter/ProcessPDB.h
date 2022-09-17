@@ -36,10 +36,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFolder(FString folder);
 
-	FString folderName;
-
 	UFUNCTION(BlueprintCallable)
 	void setFixedColours(TArray<FVector> fixedColours);
+
+	UFUNCTION(BlueprintCallable)
+	void AlignMolecules(AProcessPDB* fixedMolecules);
+
+	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
+
+	FString folderName;
 
 	TArray<FVector> colours;
 
