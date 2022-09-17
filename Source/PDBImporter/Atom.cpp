@@ -55,3 +55,9 @@ double Atom::GetYPos() { return yPos; }
 double Atom::GetZPos() { return zPos; }
 
 FString Atom::GetElementSymbol() { return elementSymbol; }
+
+void Atom::SetAtomPosition(std::vector<double> position) {
+	xPos = position[0];
+	yPos = position[1];
+	zPos = position[2];
+}

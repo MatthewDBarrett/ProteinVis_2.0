@@ -23,6 +23,8 @@ public:
 
 	void SetPosition(FVector position);
 
+	void RemoveAllAtoms();
+
 	UPROPERTY(BlueprintReadWrite, Category = MyCharacter)
 	int32 AtomsISM_index;
 

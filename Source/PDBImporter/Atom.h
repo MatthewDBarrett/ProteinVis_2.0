@@ -26,6 +26,8 @@ public:
 
 	void SetRadius(double radius);
 	double GetRadius();
+
+	void SetAtomPosition(std::vector<double> position);
 	
 private:
 	FString type;

@@ -43,6 +43,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetProteinHeight();
 
+	std::vector<std::vector<double>> GetAtomPositions();
+
+	std::vector<std::vector<double>> GetPointMatchAlignment(AMolecule* fixedMol);
+
+	UFUNCTION(BlueprintCallable)
+	void AlignMolecule(AMolecule* fixedMol);
+
 	void ConvertMolecule(TArray<FString> strings, FVector molColour);
 
 	void SpawnAtoms();

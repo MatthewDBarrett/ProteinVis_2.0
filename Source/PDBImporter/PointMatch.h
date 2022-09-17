@@ -55,24 +55,6 @@ class PointMatch
         t = avgQ - R * avgP;
     }
 
-    static Eigen::Vector3d ToEigenVect(const std::vector<double >& P)
-    {
-        assert(P.size() == 3);//must have x,y and z
-        Eigen::Vector3d ret;
-        ret[0] = P[0];
-        ret[1] = P[1];
-        ret[2] = P[2];
-        return ret;
-    }
-
-    static std::vector<Eigen::Vector3d> ToEigenVect(const std::vector<std::vector<double > >& P)
-    {
-        std::vector<Eigen::Vector3d> ret;
-        for (size_t i = 0; i < P.size(); i++)
-            ret.push_back(ToEigenVect(P[i]));
-        return ret;
-    }
-
     static std::vector<double > ToSTDVect(const Eigen::Vector3d& P)
     {
         std::vector<double > ret;
@@ -109,6 +91,24 @@ class PointMatch
 
 public:
 
+    static Eigen::Vector3d ToEigenVect(const std::vector<double >& P)
+    {
+        assert(P.size() == 3);//must have x,y and z
+        Eigen::Vector3d ret;
+        ret[0] = P[0];
+        ret[1] = P[1];
+        ret[2] = P[2];
+        return ret;
+    }
+
+    static std::vector<Eigen::Vector3d> ToEigenVect(const std::vector<std::vector<double > >& P)
+    {
+        std::vector<Eigen::Vector3d> ret;
+        for (size_t i = 0; i < P.size(); i++)
+            ret.push_back(ToEigenVect(P[i]));
+        return ret;
+    }
+
     static void ComputeLeastSquaresRigidMotion(const std::vector<std::vector<double > >& pFix,
         const std::vector<std::vector<double > >& pMov,
         Eigen::Matrix3d& R,
@@ -141,6 +141,29 @@ public:
 
         pMov = ToSTDVect(pMovE);
 
+    }
+
+    struct Alignment
+    {
+        Eigen::Matrix3d rotation;
+        Eigen::Vector3d translation;
+    };
+
+    static Alignment GetAlignment(const std::vector<std::vector<double > >& pFix,
+        std::vector<std::vector<double > >& pMov) 
+    {
+        assert(pFix.size() == pMov.size());
+        std::vector<Eigen::Vector3d>  pFixE, pMovE;
+
+        pFixE = ToEigenVect(pFix);
+        pMovE = ToEigenVect(pMov);
+
+        Eigen::Matrix3d R;
+        Eigen::Vector3d t;
+        ComputeLeastSquaresRigidMotion(pFixE, pMovE, R, t);
+
+        Alignment result = { R, t };
+        return result;
     }
 };
 #endif

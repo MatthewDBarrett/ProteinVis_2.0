@@ -7,6 +7,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "InstancedStaticMeshActor.h"
+#include "PointMatch.h"
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 #include "CylinderISMA.h"
 
 // Sets default values
@@ -592,6 +595,55 @@ void AMolecule::SetProteinCentre() {
 void AMolecule::SetRenderConnections(bool render) { renderConnections = render; }
 
 bool AMolecule::GetRenderConnections() { return renderConnections; }
+
+std::vector<std::vector<double>> AMolecule::GetAtomPositions() {
+	std::vector<std::vector<double>> atomPositions;
+	
+	for (Atom atom : atoms) {
+		std::vector<double> position;
+
+		position.push_back( atom.GetXPos() );
+		position.push_back( atom.GetYPos() );
+		position.push_back( atom.GetZPos() );
+
+		atomPositions.push_back( position );
+	}
+
+	return atomPositions;
+}
+
+std::vector<std::vector<double>> AMolecule::GetPointMatchAlignment(AMolecule* fixedMol) {
+	std::vector<std::vector<double>> PFix, PMov;
+
+	PFix = fixedMol->GetAtomPositions();
+	PMov = this->GetAtomPositions();
+
+	PointMatch::TrasformRigidMatch(PFix, PMov);
+
+	return PMov;
+}
+
+void AMolecule::AlignMolecule(AMolecule* fixedMol) {
+	std::vector<std::vector<double>> alignedPositions = this->GetPointMatchAlignment(fixedMol);
+
+	//Update atoms with their new positions
+	for (int i = 0; i < atoms.Num(); i++)
+		atoms[i].SetAtomPosition( alignedPositions[i] );
+
+	meshPointer->RemoveAllAtoms();
+
+	this->SetProteinCentre();
+
+	if (renderConnections) {
+		this->SpawnTempAtoms();
+		this->SpawnConnections();
+		this->RemoveTempAtoms();
+	}
+
+	this->SpawnAtoms();
+}
+
+
 
 
 
