@@ -12,37 +12,44 @@ UCLASS()
 class PDBIMPORTER_API AProcessPDB : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AProcessPDB();
 
 	UFUNCTION(BlueprintCallable)
-	void LoadPDBfromFile(FString fileName);
+		void LoadPDBfromFile(FString fileName);
 
 	TArray<AActor*> molecules;
 
 	UPROPERTY()
-	AActor* moleculeActor;
+		AActor* moleculeActor;
 
 	AMolecule* moleculePointer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> myMoleculeToSpawn;
+		TSubclassOf<AActor> myMoleculeToSpawn;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<AActor*> GetMolecules();
+		TArray<AActor*> GetMolecules();
 
 	UFUNCTION(BlueprintCallable)
-	void SetFolder(FString folder);
+		void SetFolder(FString folder);
 
 	UFUNCTION(BlueprintCallable)
-	void setFixedColours(TArray<FVector> fixedColours);
+		void setFixedColours(TArray<FVector> fixedColours);
 
 	UFUNCTION(BlueprintCallable)
-	void AlignMolecules(AProcessPDB* fixedMolecules);
+		void AlignMolecules(AProcessPDB* fixedMolecules);
+
+	UFUNCTION(BlueprintCallable)
+		void AlignSingleMolecule(AProcessPDB* fixedMolecules, int32 index);
+
+	UFUNCTION(BlueprintCallable)
+		void AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 index);
 
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
+
 
 	FString folderName;
 
@@ -56,7 +63,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

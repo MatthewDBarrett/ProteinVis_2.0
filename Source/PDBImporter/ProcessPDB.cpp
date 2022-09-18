@@ -5,73 +5,73 @@
 #include "Molecule.h"
 
 AProcessPDB::AProcessPDB() {
-	PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = false;
 }
 
 void AProcessPDB::LoadPDBfromFile(FString fileName) {
 
     //this->PointMatchTest();
 
-	FString directory = FPaths::ProjectContentDir();
-	FString atomData;
-	IPlatformFile& file = FPlatformFileManager::Get().GetPlatformFile();
+    FString directory = FPaths::ProjectContentDir();
+    FString atomData;
+    IPlatformFile& file = FPlatformFileManager::Get().GetPlatformFile();
 
-	if (file.CreateDirectory(*directory)) {
+    if (file.CreateDirectory(*directory)) {
 
-		FString myFile = directory + "/" + "/PDB_Files/" + folderName + fileName + ".pdb";
-		FFileHelper::LoadFileToString(atomData, *myFile);
+        FString myFile = directory + "/" + "/PDB_Files/" + folderName + fileName + ".pdb";
+        FFileHelper::LoadFileToString(atomData, *myFile);
 
-		TArray<FString> stringRecords;
-		atomData.ParseIntoArray(stringRecords, TEXT(" "), true);
+        TArray<FString> stringRecords;
+        atomData.ParseIntoArray(stringRecords, TEXT(" "), true);
 
-		TArray<FString> moleculeStrings;
+        TArray<FString> moleculeStrings;
 
-		for (int32 i = 0; i < stringRecords.Num(); i++) {
+        for (int32 i = 0; i < stringRecords.Num(); i++) {
 
-			FString segment = stringRecords[i];
+            FString segment = stringRecords[i];
 
-			moleculeStrings.Add(segment);
+            moleculeStrings.Add(segment);
 
-			if (segment.Contains("TER") && segment.Contains("\n") && !segment.Contains("MAS")) {
+            if (segment.Contains("TER") && segment.Contains("\n") && !segment.Contains("MAS")) {
 
-				FActorSpawnParameters SpawnParams;
-				FVector pos = FVector(0, 0, 0);
-				FRotator rot = FRotator(0, 0, 0);
+                FActorSpawnParameters SpawnParams;
+                FVector pos = FVector(0, 0, 0);
+                FRotator rot = FRotator(0, 0, 0);
 
-				moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
-				moleculePointer = Cast<AMolecule>(moleculeActor);
+                moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
+                moleculePointer = Cast<AMolecule>(moleculeActor);
 
-				moleculePointer->SetAtomSize(1.5);			//standard 0.7f
+                moleculePointer->SetAtomSize(1.5);			//standard 0.7f
 
-				moleculePointer->ConvertMolecule(moleculeStrings, colours[molecules.Num()]);
+                moleculePointer->ConvertMolecule(moleculeStrings, colours[molecules.Num()]);
 
-				molecules.Add(moleculeActor);
+                molecules.Add(moleculeActor);
 
-				moleculeStrings = TArray<FString>();	//clear array
-			}
-		}
-	}
+                moleculeStrings = TArray<FString>();	//clear array
+            }
+        }
+    }
 }
 
 void AProcessPDB::SetFolder(FString folder) {
-	if (!folder.IsEmpty())
-		folderName = folder + "/";
-	else
-		folderName = "";
+    if (!folder.IsEmpty())
+        folderName = folder + "/";
+    else
+        folderName = "";
 }
 
 void AProcessPDB::setFixedColours(TArray<FVector> fixedColours) { colours = fixedColours; }
 
 void AProcessPDB::PointMatchTest() {
-	//const std::vector<Eigen::Vector3d> pFix;
-	//std::vector<Eigen::Vector3d> pMov;
-	//Eigen::Matrix3d R;
-	//Eigen::Vector3d t;
+    //const std::vector<Eigen::Vector3d> pFix;
+    //std::vector<Eigen::Vector3d> pMov;
+    //Eigen::Matrix3d R;
+    //Eigen::Vector3d t;
 
-	//pointMatch = PointMatch();
-	////pointMatch.TrasformRigidMatch(&pFix, &pMov);
+    //pointMatch = PointMatch();
+    ////pointMatch.TrasformRigidMatch(&pFix, &pMov);
 
-	std::vector<std::vector<double> > PFix, PMov;
+    std::vector<std::vector<double> > PFix, PMov;
 
     //INITIALIZE 8 POINTS OF A CUBE
 
@@ -243,12 +243,12 @@ void AProcessPDB::PointMatchTest() {
         UE_LOG(LogTemp, Warning, TEXT("X: %f Y: %f Z: %f ,"), PMov[i][0], PMov[i][1], PMov[i][2]);
 }
 
-void AProcessPDB::BeginPlay(){
-	Super::BeginPlay();	
+void AProcessPDB::BeginPlay() {
+    Super::BeginPlay();
 }
 
-void AProcessPDB::Tick(float DeltaTime){
-	Super::Tick(DeltaTime);
+void AProcessPDB::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
 }
 
 TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
@@ -264,14 +264,14 @@ void AProcessPDB::AlignMolecules(AProcessPDB* fixedMolecules) {
     for (AActor* fixedMol : fixedMols) {
         std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
         for (std::vector<double> pos : atomPositions)
-            fixedMolsPos.push_back( pos );
+            fixedMolsPos.push_back(pos);
     }
 
     for (AActor* Mol : Mols) {
         std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
-        atomCounts.Add( atomPositions.size() );
+        atomCounts.Add(atomPositions.size());
         for (std::vector<double> pos : atomPositions)
-            molsPos.push_back( pos );
+            molsPos.push_back(pos);
     }
 
     PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
@@ -290,9 +290,77 @@ void AProcessPDB::AlignMolecules(AProcessPDB* fixedMolecules) {
     }
 }
 
-void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex){
+void AProcessPDB::AlignSingleMolecule(AProcessPDB* fixedMolecules, int32 index) {
+    TArray<AActor*> fixedMols = fixedMolecules->GetMolecules();
+    TArray<AActor*> Mols = this->GetMolecules();
+
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+
+    TArray<int32> atomCounts;
+
+    std::vector<std::vector<double>> atomPositions1 = Cast<AMolecule>(fixedMols[index])->GetAtomPositions();
+    for (std::vector<double> pos : atomPositions1)
+        fixedMolsPos.push_back(pos);
+
+    std::vector<std::vector<double>> atomPositions2 = Cast<AMolecule>(Mols[index])->GetAtomPositions();
+    atomCounts.Add(atomPositions2.size());
+    for (std::vector<double> pos : atomPositions2)
+        molsPos.push_back(pos);
+
+    PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+    //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
+
+    //int32 nextIndex = 0;
+    //for (int i = 0; i < index+1; i++) {
+    //    std::vector<std::vector<double>> atomPositions;
+
+    //    for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+    //        atomPositions.push_back(molsPos[j]);
+    //    }
+
+    //    this->UpdateMolecule(Cast<AMolecule>(Mols[i]), atomPositions, i);
+    //    nextIndex += atomCounts[i];
+    //}
+
+    this->UpdateMolecule(Cast<AMolecule>(Mols[index]), molsPos, index);
+}
+
+void AProcessPDB::AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 index) {
+    TArray<AActor*> fixedMols = fixedMolecules->GetMolecules();
+    TArray<AActor*> Mols = this->GetMolecules();
+
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+
+    TArray<int32> atomCounts;
+
+    std::vector<std::vector<double>> atomPositions1 = Cast<AMolecule>(fixedMols[index])->GetAtomPositions();
+    for (std::vector<double> pos : atomPositions1)
+        fixedMolsPos.push_back(pos);
+
+    std::vector<std::vector<double>> atomPositions2 = Cast<AMolecule>(Mols[index])->GetAtomPositions();
+    atomCounts.Add(atomPositions2.size());
+    for (std::vector<double> pos : atomPositions2)
+        molsPos.push_back(pos);
+
+    PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+    //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
+
+    int32 nextIndex = 0;
+    for (int i = 0; i < Mols.Num(); i++) {
+        std::vector<std::vector<double>> atomPositions;
+
+        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+            atomPositions.push_back(molsPos[j]);
+        }
+
+        this->UpdateMolecule(Cast<AMolecule>(Mols[i]), atomPositions, i);
+        nextIndex += atomCounts[i];
+    }
+}
+
+void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
     for (int i = 0; i < mol->atoms.Num(); i++)
-        mol->atoms[i].SetAtomPosition( atomPositions[i] );
+        mol->atoms[i].SetAtomPosition(atomPositions[i]);
 
     //mol->meshPointer->RemoveAllAtoms();
 
