@@ -274,6 +274,8 @@ void AProcessPDB::AlignMolecules(AProcessPDB* fixedMolecules) {
             molsPos.push_back(pos);
     }
 
+    //this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
+
     PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
     //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
 
@@ -288,6 +290,8 @@ void AProcessPDB::AlignMolecules(AProcessPDB* fixedMolecules) {
         this->UpdateMolecule(Cast<AMolecule>(Mols[i]), atomPositions, i);
         nextIndex += atomCounts[i];
     }
+
+    this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
 }
 
 void AProcessPDB::AlignSingleMolecule(AProcessPDB* fixedMolecules, int32 index) {
@@ -343,7 +347,6 @@ void AProcessPDB::AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 i
         molsPos.push_back(pos);
 
     PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
-    //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
 
     int32 nextIndex = 0;
     for (int i = 0; i < Mols.Num(); i++) {
@@ -390,6 +393,20 @@ void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>
     /*mol->SetProteinCentre();
 
     mol->SpawnAtoms();*/
+}
+
+double AProcessPDB::GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol) {
+    double sum = 0;
+
+    for (int i = 0; i < fixedMol.size(); i++) {
+        sum += sqrt(pow(alignedMol[i][0] - fixedMol[i][0], 2) +
+            pow(alignedMol[i][1] - fixedMol[i][1], 2) +
+            pow(alignedMol[i][2] - fixedMol[i][2], 2) * 1.0f);
+    }
+    
+    UE_LOG(LogTemp, Warning, TEXT("SqrDis Sum: %f"), sum);
+
+    return sum;
 }
 
 
