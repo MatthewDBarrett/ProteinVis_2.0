@@ -399,9 +399,9 @@ double AProcessPDB::GetSquaredDistanceSum(std::vector<std::vector<double>> fixed
     double sum = 0;
 
     for (int i = 0; i < fixedMol.size(); i++) {
-        sum += sqrt(pow(alignedMol[i][0] - fixedMol[i][0], 2) +
+        sum += (pow(alignedMol[i][0] - fixedMol[i][0], 2) +
             pow(alignedMol[i][1] - fixedMol[i][1], 2) +
-            pow(alignedMol[i][2] - fixedMol[i][2], 2) * 1.0f);
+            pow(alignedMol[i][2] - fixedMol[i][2], 2) );
     }
     
     UE_LOG(LogTemp, Warning, TEXT("SqrDis Sum: %f"), sum);
