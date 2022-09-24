@@ -488,6 +488,83 @@ float AMolecule::GetProteinHeight() {
 	return maxHeight - minHeight;
 }
 
+FVector AMolecule::GetProteinBoundaries() {
+	float maxHeight = 0;
+	float maxWidth = 0;
+	float maxLength = 0;
+	float minHeight = MAX_int16;
+	float minWidth = MAX_int16;
+	float minLength = MAX_int16;
+
+	for (Atom atom : atoms) {
+		float xPos = atom.GetXPos();
+		float yPos = atom.GetYPos();
+		float zPos = atom.GetZPos();
+
+		if (xPos > maxLength)
+			maxLength = xPos;
+		if (xPos < minLength)
+			minLength = xPos;
+
+		if (yPos > maxWidth)
+			maxWidth = yPos;
+		if (yPos < minWidth)
+			minWidth = yPos;
+
+		if (zPos > maxHeight)
+			maxHeight = zPos;
+		if (zPos < minHeight)
+			minHeight = zPos;
+	}
+
+	return FVector(maxLength - minLength, maxWidth - minWidth, maxHeight - minHeight);
+}
+
+float AMolecule::GetProteinSize() {
+	float maxHeight = 0;
+	float maxWidth = 0;
+	float maxLength = 0;
+	float minHeight = MAX_int16;
+	float minWidth = MAX_int16;
+	float minLength = MAX_int16;
+
+	for (Atom atom : atoms) {
+		float xPos = atom.GetXPos();
+		float yPos = atom.GetYPos();
+		float zPos = atom.GetZPos();
+
+		if (xPos > maxLength)
+			maxLength = xPos;
+		if (xPos < minLength)
+			minLength = xPos;
+
+		if (yPos > maxWidth)
+			maxWidth = yPos;
+		if (yPos < minWidth)
+			minWidth = yPos;
+
+		if (zPos > maxHeight)
+			maxHeight = zPos;
+		if (zPos < minHeight)
+			minHeight = zPos;
+	}
+
+	float result = 0;
+
+	float totalLength = abs(maxLength - minLength);
+	float totalWidth = abs(maxWidth - minWidth);
+	float totalHeight = abs(maxHeight - minHeight);
+
+	if (totalLength > result)
+		result = totalLength;
+	else if (totalWidth > result)
+		result = totalWidth;
+	else if (totalHeight > result)
+		result = totalHeight;
+
+	return result;
+}
+
 void AMolecule::SpawnAtoms() {
 	int32 count = 1;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(atoms.Num()));

@@ -44,6 +44,12 @@ public:
 	float GetProteinHeight();
 
 	UFUNCTION(BlueprintCallable)
+	FVector GetProteinBoundaries();
+
+	UFUNCTION(BlueprintCallable)
+	float GetProteinSize();
+
+	UFUNCTION(BlueprintCallable)
 	AInstancedStaticMeshActor* GetAtomsPointer();
 
 	UFUNCTION(BlueprintCallable)
