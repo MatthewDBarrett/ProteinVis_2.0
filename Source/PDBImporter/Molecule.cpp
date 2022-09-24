@@ -681,6 +681,19 @@ void AMolecule::AlignMolecule(AMolecule* fixedMol) {
 	this->SpawnAtoms();
 }
 
+AInstancedStaticMeshActor* AMolecule::GetAtomsPointer() { 
+	if (meshPointer != NULL)
+		return meshPointer;
+	else
+		return NULL;
+}
+
+ACylinderISMA* AMolecule::GetConnectionsPointer() {	
+	if (cylinderMeshPointer != NULL)
+		return cylinderMeshPointer;
+	else
+		return NULL;
+}
 
 
 

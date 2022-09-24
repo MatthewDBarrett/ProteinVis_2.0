@@ -43,6 +43,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetProteinHeight();
 
+	UFUNCTION(BlueprintCallable)
+	AInstancedStaticMeshActor* GetAtomsPointer();
+
+	UFUNCTION(BlueprintCallable)
+	ACylinderISMA* GetConnectionsPointer();
+
 	std::vector<std::vector<double>> GetAtomPositions();
 
 	std::vector<std::vector<double>> GetPointMatchAlignment(AMolecule* fixedMol);
