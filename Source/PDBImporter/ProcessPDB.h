@@ -48,7 +48,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 index);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAlignedMolecules(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
+
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
+
+	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
 
