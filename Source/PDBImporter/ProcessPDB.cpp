@@ -393,13 +393,34 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMolecules(TArray<AMolecule*> fixedMole
             atomPositions.push_back(molsPos[j]);
         }
 
-        alignedMolecules.Add( this->GetUpdatedMolecule(Cast<AMolecule>(alignMolecules[i]), atomPositions, i) );
+        this->GetUpdatedMolecule(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
         nextIndex += atomCounts[i];
     }
 
-    //this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
+    return alignMolecules;
+}
 
-    return alignedMolecules;
+float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules) {
+    
+    UE_LOG(LogTemp, Warning, TEXT("OG fixed: %d"), fixedMolecules.Num());
+    
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+    
+    for (AActor* fixedMol : fixedMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+        for (std::vector<double> pos : atomPositions)
+            fixedMolsPos.push_back(pos);
+    }
+
+    for (AActor* Mol : alignedMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+        for (std::vector<double> pos : atomPositions)
+            molsPos.push_back(pos);
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("fixed: %d mols: %d"), fixedMolsPos.size(), molsPos.size());
+
+    return this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
 }
 
 void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
@@ -467,8 +488,6 @@ double AProcessPDB::GetSquaredDistanceSum(std::vector<std::vector<double>> fixed
             pow(alignedMol[i][2] - fixedMol[i][2], 2) );
     }
     
-    UE_LOG(LogTemp, Warning, TEXT("SqrDis Sum: %f"), sum);
-
     return sum;
 }
 
