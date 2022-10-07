@@ -20,7 +20,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LoadPDBfromFile(FString fileName);
 
+	UFUNCTION(BlueprintCallable)
+	void ProcessPDBWithoutRendering(FString fileName);
+
 	TArray<AActor*> molecules;
+
+	TArray<AMolecule*> aMolecules;
 
 	UPROPERTY()
 		AActor* moleculeActor;
@@ -32,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		TArray<AActor*> GetMolecules();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAMolecules();
 
 	UFUNCTION(BlueprintCallable)
 		void SetFolder(FString folder);
@@ -52,11 +60,16 @@ public:
 	TArray<AMolecule*> GetAlignedMolecules(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
+
+	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules);
 
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
+
+	void GetUpdatedMoleculeWithoutRendering(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
 

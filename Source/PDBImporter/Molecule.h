@@ -64,7 +64,11 @@ public:
 
 	void ConvertMolecule(TArray<FString> strings, FVector molColour);
 
+	void ConvertMoleculeWithoutRendering(TArray<FString> strings);
+
 	void CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour);
+
+	void SetAtoms(TArray<Atom> originalAtoms);
 
 	void SpawnAtoms();
 
