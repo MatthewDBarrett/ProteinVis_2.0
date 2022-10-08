@@ -468,9 +468,9 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
     }
 
     PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
-    //UE_LOG(LogTemp, Warning, TEXT("fixedMolsPos: %d, molsPos: %d"), fixedMolsPos.size(), molsPos.size());
-
+    
     int32 nextIndex = 0;
+
     for (int i = 0; i < alignMolecules.Num(); i++) {
         std::vector<std::vector<double>> atomPositions;
 
@@ -479,16 +479,18 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
         }
 
         this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
+        //UE_LOG(LogTemp, Warning, TEXT("Adding Molecule: %s"), *alignMolecules[i]->GetName());
 
         nextIndex += atomCounts[i];
     }
+
 
     return alignMolecules;
 }
 
 float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules) {
     
-    UE_LOG(LogTemp, Warning, TEXT("OG fixed: %d"), fixedMolecules.Num());
+    //UE_LOG(LogTemp, Warning, TEXT("OG fixed: %d"), fixedMolecules.Num());
     
     std::vector<std::vector<double>> fixedMolsPos, molsPos;
     
@@ -504,7 +506,7 @@ float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolec
             molsPos.push_back(pos);
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("fixed: %d mols: %d"), fixedMolsPos.size(), molsPos.size());
+    //UE_LOG(LogTemp, Warning, TEXT("fixed: %d mols: %d"), fixedMolsPos.size(), molsPos.size());
 
     return this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
 }
