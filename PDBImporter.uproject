@@ -48,6 +48,10 @@
 		{
 			"Name": "EigenPlugin",
 			"Enabled": false
+		},
+		{
+			"Name": "ThirdPartyLibs",
+			"Enabled": false
 		}
 	]
 }

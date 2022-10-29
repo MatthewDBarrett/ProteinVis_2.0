@@ -12,6 +12,8 @@ public class PDBImporter : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
+        //PublicIncludePaths.Add("G:/Github Repo/ProteinVis_2.0/ThirdParty/include/Alglib");
+
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
