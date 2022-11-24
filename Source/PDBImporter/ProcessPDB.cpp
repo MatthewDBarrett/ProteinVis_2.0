@@ -511,6 +511,32 @@ float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolec
     return this->GetSquaredDistanceSum(fixedMolsPos, molsPos);
 }
 
+void AProcessPDB::UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules) {
+
+    TArray<AMolecule*> Mols = alignedMolecules;
+    TArray<int32> atomCounts;
+    std::vector<std::vector<double>> molsPos;
+    
+    for (AActor* Mol : Mols) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+        atomCounts.Add(atomPositions.size());
+        for (std::vector<double> pos : atomPositions)
+            molsPos.push_back(pos);
+    }
+
+    int32 nextIndex = 0;
+    for (int i = 0; i < Mols.Num(); i++) {
+        std::vector<std::vector<double>> atomPositions;
+
+        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+            atomPositions.push_back(molsPos[j]);
+        }
+
+        this->UpdateMolecule(Cast<AMolecule>(Mols[i]), atomPositions, i);
+        nextIndex += atomCounts[i];
+    }
+}
+
 void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
     for (int i = 0; i < mol->atoms.Num(); i++)
         mol->atoms[i].SetAtomPosition(atomPositions[i]);

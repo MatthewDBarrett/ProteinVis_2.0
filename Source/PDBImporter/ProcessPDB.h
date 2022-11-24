@@ -18,43 +18,39 @@ public:
 	AProcessPDB();
 
 	UFUNCTION(BlueprintCallable)
-		void LoadPDBfromFile(FString fileName);
+	void LoadPDBfromFile(FString fileName);
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessPDBWithoutRendering(FString fileName);
 
-	TArray<AActor*> molecules;
-
-	TArray<AMolecule*> aMolecules;
-
 	UPROPERTY()
-		AActor* moleculeActor;
+	AActor* moleculeActor;
 
 	AMolecule* moleculePointer;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-		TSubclassOf<AActor> myMoleculeToSpawn;
+	TSubclassOf<AActor> myMoleculeToSpawn;
 
 	UFUNCTION(BlueprintCallable)
-		TArray<AActor*> GetMolecules();
+	TArray<AActor*> GetMolecules();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AMolecule*> GetAMolecules();
 
 	UFUNCTION(BlueprintCallable)
-		void SetFolder(FString folder);
+	void SetFolder(FString folder);
 
 	UFUNCTION(BlueprintCallable)
-		void setFixedColours(TArray<FVector> fixedColours);
+	void setFixedColours(TArray<FVector> fixedColours);
 
 	UFUNCTION(BlueprintCallable)
-		void AlignMolecules(AProcessPDB* fixedMolecules);
+	void AlignMolecules(AProcessPDB* fixedMolecules);
 
 	UFUNCTION(BlueprintCallable)
-		void AlignSingleMolecule(AProcessPDB* fixedMolecules, int32 index);
+	void AlignSingleMolecule(AProcessPDB* fixedMolecules, int32 index);
 
 	UFUNCTION(BlueprintCallable)
-		void AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 index);
+	void AlignAllMoleculesBySingle(AProcessPDB* fixedMolecules, int32 index);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AMolecule*> GetAlignedMolecules(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
@@ -65,6 +61,9 @@ public:
 	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules);
+
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
@@ -73,6 +72,10 @@ public:
 
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
 
+	TArray<AActor*> molecules;
+
+	TArray<AMolecule*> aMolecules;
+	
 	FString folderName;
 
 	TArray<FVector> colours;
