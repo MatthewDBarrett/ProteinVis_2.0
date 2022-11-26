@@ -23,6 +23,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ProcessPDBWithoutRendering(FString fileName);
 
+	//Render molecules after running the ProcessPDBWithoutRendering Function
+	UFUNCTION(BlueprintCallable)
+	void RenderMolecules();
+
+	UFUNCTION(BlueprintCallable)
+	FString GetFileName();
+
+	TArray<AActor*> molecules;
+
+	TArray<AMolecule*> aMolecules;
+
 	UPROPERTY()
 	AActor* moleculeActor;
 
@@ -56,10 +67,10 @@ public:
 	TArray<AMolecule*> GetAlignedMolecules(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules);
+	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> alignMolecules);
 
 	UFUNCTION(BlueprintCallable)
-    float GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules);
+    float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules);
@@ -72,11 +83,9 @@ public:
 
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
 
-	TArray<AActor*> molecules;
-
-	TArray<AMolecule*> aMolecules;
-	
 	FString folderName;
+
+	FString moleculeFileName;
 
 	TArray<FVector> colours;
 

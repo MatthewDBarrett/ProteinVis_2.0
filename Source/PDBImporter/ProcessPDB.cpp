@@ -55,6 +55,8 @@ void AProcessPDB::LoadPDBfromFile(FString fileName) {
 
 void AProcessPDB::ProcessPDBWithoutRendering(FString fileName) {
 
+    moleculeFileName = fileName;
+
     aMolecules.Empty();
 
     FString directory = FPaths::ProjectContentDir();
@@ -97,6 +99,14 @@ void AProcessPDB::ProcessPDBWithoutRendering(FString fileName) {
         }
     }
 }
+
+void AProcessPDB::RenderMolecules() {
+    for (int i = 0; i < aMolecules.Num(); i++) {
+        aMolecules[i]->RenderMolecule(colours[i]);
+    }
+}
+
+FString AProcessPDB::GetFileName() { return moleculeFileName; }
 
 void AProcessPDB::SetFolder(FString folder) {
     if (!folder.IsEmpty())
@@ -447,14 +457,14 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMolecules(TArray<AMolecule*> fixedMole
     return alignMolecules;
 }
 
-TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignMolecules) {
+TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> alignMolecules) {
     TArray<AMolecule*> alignedMolecules;
 
     std::vector<std::vector<double>> fixedMolsPos, molsPos;
 
     TArray<int32> atomCounts;
 
-    for (AActor* fixedMol : fixedMolecules) {
+    for (AActor* fixedMol : aMolecules) {
         std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
         for (std::vector<double> pos : atomPositions)
             fixedMolsPos.push_back(pos);
@@ -488,13 +498,13 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
     return alignMolecules;
 }
 
-float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> fixedMolecules, TArray<AMolecule*> alignedMolecules) {
+float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> alignedMolecules) {
     
     //UE_LOG(LogTemp, Warning, TEXT("OG fixed: %d"), fixedMolecules.Num());
     
     std::vector<std::vector<double>> fixedMolsPos, molsPos;
     
-    for (AActor* fixedMol : fixedMolecules) {
+    for (AActor* fixedMol : aMolecules) {
         std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
         for (std::vector<double> pos : atomPositions)
             fixedMolsPos.push_back(pos);
