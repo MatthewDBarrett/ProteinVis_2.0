@@ -16,7 +16,8 @@ void AInstancedStaticMeshActor::InstanceAtom(FTransform instanceTransform) {
 }
 
 void AInstancedStaticMeshActor::RemoveInitialInstance() {
-	InstancedStaticMeshComponent->RemoveInstance(0);
+	if ( InstancedStaticMeshComponent != NULL )
+		InstancedStaticMeshComponent->RemoveInstance(0);
 }
 
 void AInstancedStaticMeshActor::SetCustomData(int32 index, int32 dataIndex, double dataValue, bool stateDirty) {

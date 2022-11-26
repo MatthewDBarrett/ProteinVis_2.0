@@ -481,6 +481,36 @@ void AMolecule::ConvertMoleculeWithoutRendering(TArray<FString> strings) {
 	MoleculeCreated = true;
 }
 
+void AMolecule::RenderMolecule(FVector molColour) {
+
+	MoleculeCreated = false;
+	this->SetAtomSize(1.5);			//standard 0.7f
+
+	FActorSpawnParameters SpawnParams;
+	FVector pos = FVector(0, 0, 0);
+	FRotator rot = FRotator(0, 0, 0);
+	instancedStaticMeshActor = GetWorld()->SpawnActor<AActor>(StaticMeshToSpawn, pos, rot, SpawnParams);
+	cylinderISMA = GetWorld()->SpawnActor<AActor>(CylinderStaticMeshToSpawn, pos, rot, SpawnParams);
+	meshPointer = Cast<AInstancedStaticMeshActor>(instancedStaticMeshActor);
+	cylinderMeshPointer = Cast<ACylinderISMA>(cylinderISMA);
+	
+	meshPointer->SetIndex(molIndex);
+	cylinderMeshPointer->SetIndex(molIndex);
+	
+	this->SetAtomTypes();
+	this->SetAtomColours();
+	this->ColourChain(molColour);
+
+	this->SetAtomSizes();
+	this->SetProteinCentre();
+	if (renderConnections) {
+		this->SpawnTempAtoms();
+		this->SpawnConnections();
+		this->RemoveTempAtoms();
+	}
+	this->SpawnAtoms();
+}
+
 void AMolecule::CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour) {
 	FActorSpawnParameters SpawnParams;
 	FVector pos = FVector(0, 0, 0);
