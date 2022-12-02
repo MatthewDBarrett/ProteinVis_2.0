@@ -75,6 +75,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<AProcessPDB*> GenerateBlendFrames(AProcessPDB* ProteinB, int32 frames);
+
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);

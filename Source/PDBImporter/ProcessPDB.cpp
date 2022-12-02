@@ -547,6 +547,11 @@ void AProcessPDB::UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules) {
     }
 }
 
+TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* ProteinB, int32 frames)
+{
+    return TArray<AProcessPDB*>();
+}
+
 void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
     for (int i = 0; i < mol->atoms.Num(); i++)
         mol->atoms[i].SetAtomPosition(atomPositions[i]);
