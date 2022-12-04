@@ -575,8 +575,8 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
                 double z2 = proteinBPositions[j].moleculePositions[m].Z;
 
                 double newX = x1 + (((FMath::Abs(x1 - x2)) / (frames + 1)) * i);
-                double newY = x1 + (((FMath::Abs(y1 - y2)) / (frames + 1)) * i);
-                double newZ = x1 + (((FMath::Abs(z1 - z2)) / (frames + 1)) * i);
+                double newY = y1 + (((FMath::Abs(y1 - y2)) / (frames + 1)) * i);
+                double newZ = z1 + (((FMath::Abs(z1 - z2)) / (frames + 1)) * i);
 
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
