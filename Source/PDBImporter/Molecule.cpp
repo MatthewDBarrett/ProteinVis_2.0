@@ -114,6 +114,8 @@ void AMolecule::CreateNonStandardConnections() {
 	}
 }
 
+TArray<Atom> AMolecule::GetAtoms() { return atoms; }
+
 void AMolecule::SetAtomSizes() {
 	FString directory = FPaths::ProjectContentDir();
 	FString atomData;

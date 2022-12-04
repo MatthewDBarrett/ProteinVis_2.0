@@ -114,6 +114,8 @@ public:
 
 	void CreateNonStandardConnections();
 
+	TArray<Atom> GetAtoms();
+
 	FString moleculeName = "";
 
 	int32 simulationScale = 50;

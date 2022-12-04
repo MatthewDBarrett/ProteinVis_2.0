@@ -39,8 +39,16 @@ public:
 
 	AMolecule* moleculePointer;
 
+	UPROPERTY()
+	AActor* proteinActor;
+
+	AProcessPDB* proteinPointer;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> myMoleculeToSpawn;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
+	TSubclassOf<AActor> myProteinToSpawn;
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GetMolecules();
@@ -76,7 +84,12 @@ public:
 	void UpdateMoleculeAlignment(TArray<AMolecule*> alignedMolecules);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<AProcessPDB*> GenerateBlendFrames(AProcessPDB* ProteinB, int32 frames);
+	TArray<AProcessPDB*> GenerateBlendFrames(AProcessPDB* proteinB, int32 frames);
+
+	UFUNCTION(BlueprintCallable)
+	void GenerateMoleculeColours(bool isStatic);
+
+	void CreateMoleculeFromPoints(FMolPositions atomPositions, int32 molIndex, AMolecule* aMol, FVector molColour);
 
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
@@ -85,6 +98,8 @@ public:
 	void GetUpdatedMoleculeWithoutRendering(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
+
+	TArray<FMolPositions> GetAtomPositions(AProcessPDB* protein);
 
 	FString folderName;
 
@@ -104,4 +119,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+};
+
+USTRUCT()
+struct FMolPositions
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FVector> moleculePositions;
+
+	FMolPositions() {
+		moleculePositions = {};
+	}
 };
