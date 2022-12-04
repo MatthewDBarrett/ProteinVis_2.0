@@ -483,7 +483,7 @@ void AMolecule::ConvertMoleculeWithoutRendering(TArray<FString> strings) {
 	MoleculeCreated = true;
 }
 
-void AMolecule::RenderMolecule(FVector molColour) {
+void AMolecule::RenderMolecule(FVector molColour, bool isRenderingConnections) {
 
 	MoleculeCreated = false;
 	this->SetAtomSize(1.5);			//standard 0.7f
@@ -505,7 +505,7 @@ void AMolecule::RenderMolecule(FVector molColour) {
 
 	this->SetAtomSizes();
 	this->SetProteinCentre();
-	if (renderConnections) {
+	if (isRenderingConnections) {
 		this->SpawnTempAtoms();
 		this->SpawnConnections();
 		this->RemoveTempAtoms();
@@ -513,7 +513,7 @@ void AMolecule::RenderMolecule(FVector molColour) {
 	this->SpawnAtoms();
 }
 
-void AMolecule::CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour) {
+void AMolecule::CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour, bool isRenderingConnections) {
 	FActorSpawnParameters SpawnParams;
 	FVector pos = FVector(0, 0, 0);
 	FRotator rot = FRotator(0, 0, 0);
@@ -538,7 +538,7 @@ void AMolecule::CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molC
 	this->SetAtomSizes();
 	this->SetProteinCentre();
 
-	if (renderConnections) {
+	if (isRenderingConnections) {
 		this->SpawnTempAtoms();
 		this->SpawnConnections();
 		this->RemoveTempAtoms();

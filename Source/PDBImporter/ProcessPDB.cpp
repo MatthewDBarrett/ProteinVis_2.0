@@ -100,9 +100,9 @@ void AProcessPDB::ProcessPDBWithoutRendering(FString fileName) {
     }
 }
 
-void AProcessPDB::RenderMolecules() {
+void AProcessPDB::RenderMolecules(bool isRenderingConnections) {
     for (int i = 0; i < aMolecules.Num(); i++) {
-        aMolecules[i]->RenderMolecule(colours[i]);
+        aMolecules[i]->RenderMolecule(colours[i], isRenderingConnections);
     }
 }
 
@@ -558,7 +558,7 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     FRotator rot = FRotator(0, 0, 0);
 
     this->GenerateMoleculeColours(true);
-    this->RenderMolecules();
+    this->RenderMolecules(false);
     blendedProteins.Add(this);
 
     for (int i = 0; i < frames; i++) {
@@ -590,7 +590,7 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     }
 
     proteinB->GenerateMoleculeColours(true);
-    proteinB->RenderMolecules();
+    proteinB->RenderMolecules(false);
     blendedProteins.Add(proteinB);
 
     return blendedProteins;
@@ -625,7 +625,7 @@ void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 mo
         molAtoms[i].SetAtomPosition( newPos );
     }
     
-    moleculePointer->CreateMoleculeFromAtoms(molAtoms, molColour);
+    moleculePointer->CreateMoleculeFromAtoms(molAtoms, molColour, false);
 }
 
 void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
@@ -643,7 +643,7 @@ void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>
 
     moleculePointer->SetAtomSize(1.5);			//standard 0.7f
 
-    moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex]);
+    moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex], false);
 
     moleculePointer->SetPosition(FVector(12000, 0, 0));
 
@@ -677,7 +677,7 @@ AMolecule* AProcessPDB::GetUpdatedMolecule(AMolecule* mol, std::vector<std::vect
 
     moleculePointer->SetAtomSize(1.5);			//standard 0.7f
 
-    moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex]);
+    moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex], false);
 
     moleculePointer->SetPosition(FVector(12000, 0, 0));
 

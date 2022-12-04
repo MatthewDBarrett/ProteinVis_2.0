@@ -67,9 +67,9 @@ public:
 	void ConvertMoleculeWithoutRendering(TArray<FString> strings);
 
 	UFUNCTION(BlueprintCallable)
-	void RenderMolecule(FVector molColour);
+	void RenderMolecule(FVector molColour, bool isRenderingConnections);
 
-	void CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour);
+	void CreateMoleculeFromAtoms(TArray<Atom> originalAtoms, FVector molColour, bool isRenderingConnections);
 
 	void SetAtoms(TArray<Atom> originalAtoms);
 

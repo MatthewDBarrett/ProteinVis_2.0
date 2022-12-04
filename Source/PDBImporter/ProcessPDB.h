@@ -25,7 +25,7 @@ public:
 
 	//Render molecules after running the ProcessPDBWithoutRendering Function
 	UFUNCTION(BlueprintCallable)
-	void RenderMolecules();
+	void RenderMolecules(bool isRenderingConnections);
 
 	UFUNCTION(BlueprintCallable)
 	FString GetFileName();
