@@ -91,6 +91,11 @@ public:
 
 	void CreateMoleculeFromPoints(FMolPositions atomPositions, int32 molIndex, AMolecule* aMol, FVector molColour);
 
+	UFUNCTION(BlueprintCallable)
+	void HideProtein(AProcessPDB* protein, bool isHidden);
+	
+	void HideMolecule(AMolecule* mol, bool isHidden);
+
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
 	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);

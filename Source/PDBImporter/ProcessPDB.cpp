@@ -562,6 +562,11 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     blendedProteins.Add(this);
 
     for (int i = 0; i < frames; i++) {
+
+        proteinActor = GetWorld()->SpawnActor<AActor>(myProteinToSpawn, pos, rot, SpawnParams);
+        proteinPointer = Cast<AProcessPDB>(proteinActor);
+
+
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
 
@@ -580,17 +585,16 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
 
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
-
-            proteinActor = GetWorld()->SpawnActor<AActor>(myProteinToSpawn, pos, rot, SpawnParams);
-            proteinPointer = Cast<AProcessPDB>(proteinActor);
-            
             proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], colours[j]);
-            blendedProteins.Add(proteinPointer);
+            
         }
+        blendedProteins.Add(proteinPointer);
     }
 
     proteinB->GenerateMoleculeColours(true);
     proteinB->RenderMolecules(false);
+    proteinB->HideProtein(proteinB, true);
+
     blendedProteins.Add(proteinB);
 
     return blendedProteins;
@@ -626,6 +630,19 @@ void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 mo
     }
     
     moleculePointer->CreateMoleculeFromAtoms(molAtoms, molColour, false);
+    aMolecules.Add(moleculePointer);
+    this->HideMolecule(moleculePointer, true);
+}
+
+void AProcessPDB::HideProtein(AProcessPDB* protein, bool isHidden) {
+    TArray<AMolecule*> mols = protein->GetAMolecules();
+    for (AMolecule* bMol : mols)
+        protein->HideMolecule(bMol, isHidden);
+}
+
+void AProcessPDB::HideMolecule(AMolecule* mol, bool isHidden){
+    mol->GetAtomsPointer()->SetActorHiddenInGame(isHidden);
+    mol->GetConnectionsPointer()->SetActorHiddenInGame(isHidden);
 }
 
 void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex) {
