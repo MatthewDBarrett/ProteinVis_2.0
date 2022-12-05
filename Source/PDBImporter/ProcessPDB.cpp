@@ -565,6 +565,7 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
 
         proteinActor = GetWorld()->SpawnActor<AActor>(myProteinToSpawn, pos, rot, SpawnParams);
         proteinPointer = Cast<AProcessPDB>(proteinActor);
+        proteinPointer->GenerateMoleculeColours(false);
 
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
@@ -578,14 +579,21 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
                 double y2 = proteinBPositions[j].moleculePositions[m].Y;
                 double z2 = proteinBPositions[j].moleculePositions[m].Z;
 
-                double newX = x1 + (((FMath::Abs(x1 - x2)) / (frames + 1)) * i);
-                double newY = y1 + (((FMath::Abs(y1 - y2)) / (frames + 1)) * i);
-                double newZ = z1 + (((FMath::Abs(z1 - z2)) / (frames + 1)) * i);
+                UE_LOG(LogTemp, Warning, TEXT("Protein A: %d, %d, %d"), x1, y1, z1);
+
+                double newX = x1 + (((FMath::Abs(FMath::Abs(x1) - x2)) / (frames + 1)) * i);
+                double newY = y1 + (((FMath::Abs(FMath::Abs(y1) - y2)) / (frames + 1)) * i);
+                double newZ = z1 + (((FMath::Abs(FMath::Abs(z1) - z2)) / (frames + 1)) * i);
+
+                UE_LOG(LogTemp, Warning, TEXT("Protein Blend: %d, %d, %d"), newX, newY, newZ);
+
+                UE_LOG(LogTemp, Warning, TEXT("Protein B: %d, %d, %d"), x2, y2, z2);
+                UE_LOG(LogTemp, Warning, TEXT("________________________________________"));
 
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
-            proteinPointer->GenerateMoleculeColours(false);
-            proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], colours[j]);
+            
+            proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]);
         }
         blendedProteins.Add(proteinPointer);
     }
