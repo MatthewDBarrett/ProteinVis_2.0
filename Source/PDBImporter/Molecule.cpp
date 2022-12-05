@@ -269,7 +269,8 @@ FString AMolecule::GetFileName() {
 }
 
 int32 AMolecule::GetNumAtoms() {
-	return atomCount;
+	return atoms.Num();
+	//return atomCount;
 }
 
 int32 AMolecule::GetNumConnections() {

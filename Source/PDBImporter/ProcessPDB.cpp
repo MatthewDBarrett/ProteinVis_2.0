@@ -570,7 +570,7 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
 
-            for (int m = 0; m < proteinAPositions[j].moleculePositions.Num(); m++) {    //Each atom position within a molecule
+            for (int m = 0; m < this->GetAMolecules()[j]->GetNumAtoms(); m++) {         //Each atom position within a molecule
                 double x1 = proteinAPositions[j].moleculePositions[m].X;
                 double y1 = proteinAPositions[j].moleculePositions[m].Y;
                 double z1 = proteinAPositions[j].moleculePositions[m].Z;
@@ -585,8 +585,8 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
 
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
+            proteinPointer->GenerateMoleculeColours(true);
             proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], colours[j]);
-            
         }
         blendedProteins.Add(proteinPointer);
     }
@@ -625,8 +625,9 @@ void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 mo
     TArray<Atom> molAtoms = aMol->GetAtoms();
     
     for (int i = 0; i < molAtoms.Num(); i++) {
-        std::vector<double> newPos = { atomPositions.moleculePositions[i].X, atomPositions.moleculePositions[i].Y, atomPositions.moleculePositions[i].Z };
-        molAtoms[i].SetAtomPosition( newPos );
+        
+        //std::vector<double> newPos = { atomPositions.moleculePositions[i].X, atomPositions.moleculePositions[i].Y, atomPositions.moleculePositions[i].Z };
+        //molAtoms[i].SetAtomPosition( newPos );
     }
     
     moleculePointer->CreateMoleculeFromAtoms(molAtoms, molColour, false);
