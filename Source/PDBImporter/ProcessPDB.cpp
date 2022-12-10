@@ -2,6 +2,7 @@
 #include "PointMatch.h"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
+#include <Runtime/Engine/Public/TimerManager.h>
 #include "Molecule.h"
 
 AProcessPDB::AProcessPDB() {
@@ -561,6 +562,8 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     this->RenderMolecules(false);
     blendedProteins.Add(this);
 
+    FTimerHandle handle;
+
     for (int i = 0; i < frames; i++) {
 
         proteinActor = GetWorld()->SpawnActor<AActor>(myProteinToSpawn, pos, rot, SpawnParams);
@@ -596,7 +599,14 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
 
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
+
+            /*GetWorld()->GetTimerManager().SetTimer(handle , [&]()
+                {
+                    proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]);
+                }, 3, false);*/
             
+            //GetWorld()->GetTimerManager().SetTimer(handle, this, &AProcessPDB::CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]), 5.f);
+
             proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]);
         }
         blendedProteins.Add(proteinPointer);
