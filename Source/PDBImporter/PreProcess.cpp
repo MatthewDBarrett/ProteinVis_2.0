@@ -14,13 +14,18 @@ APreProcess::APreProcess() {
 void APreProcess::BeginPlay() {
 	Super::BeginPlay();
 	
-	UPoolManagerBPLibrary::WarmUp(GetWorld(), AProcessPDB::StaticClass(), 1000);
+	UPoolManagerBPLibrary::WarmUp(GetWorld(), myProteinToSpawn, 50);
+
 	
-	//for (int i = 0; i < 10; i++) {
-	//	proteinPool[i]->GenerateMoleculeColours(false);
-	//	proteinPool[i]->SetFolder("");
-	//	proteinPool[i]->LoadPDBfromFile("1bna");
-	//}
+	
+	for (int i = 0; i < 10; i++) {
+		FTransform transform = FTransform(FRotator(0, 0, 0), FVector((1000 * i), 0, 0));
+
+		AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
+		protein->GenerateMoleculeColours(false);
+		protein->SetFolder("");
+		protein->LoadPDBfromFile("1bna");
+	}
 }
 
 // Called every frame
