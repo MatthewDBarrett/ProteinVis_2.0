@@ -1,5 +1,7 @@
 #include "PreProcess.h"
 #include "Molecule.h"
+#include <PoolManager/Public/PoolManagerBPLibrary.h>
+#include <PoolManager/Public/PoolActorInterface.h>
 #include "ProcessPDB.h"
 
 // Sets default values
@@ -11,6 +13,8 @@ APreProcess::APreProcess() {
 // Called when the game starts or when spawned
 void APreProcess::BeginPlay() {
 	Super::BeginPlay();
+	
+	UPoolManagerBPLibrary::WarmUp(GetWorld(), AProcessPDB::StaticClass(), 1000);
 	
 	//for (int i = 0; i < 10; i++) {
 	//	proteinPool[i]->GenerateMoleculeColours(false);
