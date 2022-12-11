@@ -4,10 +4,12 @@
 #include "GameFramework/Actor.h"
 #include "Molecule.h"
 #include "ProcessPDB.h"
+#include <PoolManager/Public/PoolManagerBPLibrary.h>
+#include <PoolManager/Public/PoolActorInterface.h>
 #include "PreProcess.generated.h"
 
 UCLASS()
-class PDBIMPORTER_API APreProcess : public AActor
+class PDBIMPORTER_API APreProcess : public AActor, public IPoolActorInterface
 {
 	GENERATED_BODY()
 	
@@ -60,14 +62,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void InitializeVariables();
+	// Called right after spawning or fetching from pool
+	virtual void OnPoolBegin_Implementation() override;
 
-	void GenerateMoleculePool();
-
-	void GenerateProteinPool();
-
-	void GenerateAtomMeshPool();
-
-	void GenerateConnectionMeshPool();
+	// Called right after the actor is released to the pool
+	virtual void OnPoolEnd_Implementation() override;
 
 };

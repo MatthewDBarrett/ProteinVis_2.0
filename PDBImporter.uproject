@@ -52,6 +52,11 @@
 		{
 			"Name": "ThirdPartyLibs",
 			"Enabled": false
+		},
+		{
+			"Name": "PoolManager",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/e25d628414564ed49499c5014ff62983"
 		}
 	]
 }
