@@ -89,6 +89,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GenerateMoleculeColours(bool isStatic);
 
+	void GenerateBlendFrameColours();
+
 	void CreateMoleculeFromPoints(FMolPositions atomPositions, int32 molIndex, AMolecule* aMol, FVector molColour);
 
 	UFUNCTION(BlueprintCallable)

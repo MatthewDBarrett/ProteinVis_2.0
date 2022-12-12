@@ -567,6 +567,7 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
 
         AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
         protein->GenerateMoleculeColours( true );
+        //protein->GenerateBlendFrameColours();
 
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
@@ -611,6 +612,12 @@ void AProcessPDB::GenerateMoleculeColours(bool isStatic) {
         colours.Add(FVector(FMath::RandRange(0, 255), FMath::RandRange(0, 255), FMath::RandRange(0, 255)));
         colours.Add(FVector(FMath::RandRange(0, 255), FMath::RandRange(0, 255), FMath::RandRange(0, 255)));
     }
+}
+
+void AProcessPDB::GenerateBlendFrameColours(){
+    colours.Add(FVector(136, 193, 218));
+    colours.Add(FVector(103, 86, 180));
+    colours.Add(FVector(201, 108, 188));
 }
 
 void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 molIndex, AMolecule* aMol, FVector molColour) {
