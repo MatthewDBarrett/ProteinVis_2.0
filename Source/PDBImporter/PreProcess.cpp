@@ -13,24 +13,35 @@ APreProcess::APreProcess() {
 // Called when the game starts or when spawned
 void APreProcess::BeginPlay() {
 	Super::BeginPlay();
-	
-	UPoolManagerBPLibrary::WarmUp(GetWorld(), myProteinToSpawn, 50);
+
+	this->InitialiseVariables();
+
+	if ( proteinToSpawn != nullptr )
+		UPoolManagerBPLibrary::WarmUp(GetWorld(), proteinToSpawn, proteinPoolSize);
+
+	if (moleculeToSpawn != nullptr)
+		UPoolManagerBPLibrary::WarmUp(GetWorld(), moleculeToSpawn, moleculePoolSize);
 
 	
 	
-	for (int i = 0; i < 10; i++) {
-		FTransform transform = FTransform(FRotator(0, 0, 0), FVector((1000 * i), 0, 0));
+	//for (int i = 0; i < 10; i++) {
+	//	FTransform transform = FTransform(FRotator(0, 0, 0), FVector((1000 * i), 0, 0));
 
-		AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
-		protein->GenerateMoleculeColours(false);
-		protein->SetFolder("");
-		protein->LoadPDBfromFile("1bna");
-	}
+	//	AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
+	//	protein->GenerateMoleculeColours(false);
+	//	protein->SetFolder("");
+	//	protein->LoadPDBfromFile("1bna");
+	//}
 }
 
 // Called every frame
 void APreProcess::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+}
+
+void APreProcess::InitialiseVariables() {
+	proteinPoolSize = 100;
+	moleculePoolSize = 500;
 }
 
 void APreProcess::OnPoolBegin_Implementation() {

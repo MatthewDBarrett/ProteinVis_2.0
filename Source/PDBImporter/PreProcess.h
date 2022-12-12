@@ -18,9 +18,9 @@ public:
 	APreProcess();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> myMoleculeToSpawn;
+	TSubclassOf<AActor> moleculeToSpawn;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> myProteinToSpawn;
+	TSubclassOf<AActor> proteinToSpawn;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> myAtomMeshToSpawn;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
@@ -61,6 +61,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void InitialiseVariables();
 
 	// Called right after spawning or fetching from pool
 	virtual void OnPoolBegin_Implementation() override;
