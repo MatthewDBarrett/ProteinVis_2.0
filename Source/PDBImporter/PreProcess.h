@@ -21,38 +21,16 @@ public:
 	TSubclassOf<AActor> moleculeToSpawn;
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> proteinToSpawn;
-	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> myAtomMeshToSpawn;
-	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	TSubclassOf<AActor> myConnectionMeshToSpawn;
 
-	UPROPERTY()
-	AActor* moleculeActor;
-	UPROPERTY()
-	AActor* proteinActor;
-	UPROPERTY()
-	AActor* atomMeshActor;
-	UPROPERTY()
-	AActor* connectionMeshActor;
-
-	AMolecule* moleculePointer;
-	AProcessPDB* proteinPointer;
-	AInstancedStaticMeshActor* atomMeshPointer;
-	ACylinderISMA* connectionMeshPointer;
-
-	TArray<AMolecule*> moleculePool;
-	TArray<AProcessPDB*> proteinPool;
-	TArray<AInstancedStaticMeshActor*> atomMeshPool;
-	TArray<ACylinderISMA*> connectionMeshPool;
+	//UPROPERTY(EditDefaultsOnly, Category = "Spawning")
+	//TSubclassOf<AActor> myAtomMeshToSpawn;
+	//UPROPERTY(EditDefaultsOnly, Category = "Spawning")
+	//TSubclassOf<AActor> myConnectionMeshToSpawn;
 
 	int32 moleculePoolSize;
 	int32 proteinPoolSize;
-	int32 atomMeshPoolSize;
-	int32 connectionMeshPoolSize;
-
-	FActorSpawnParameters spawnParams;
-	FVector spawnPos;
-	FRotator spawnRot;
+	//int32 atomMeshPoolSize;
+	//int32 connectionMeshPoolSize;
 
 protected:
 	// Called when the game starts or when spawned

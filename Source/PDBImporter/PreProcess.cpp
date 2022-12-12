@@ -21,17 +21,6 @@ void APreProcess::BeginPlay() {
 
 	if (moleculeToSpawn != nullptr)
 		UPoolManagerBPLibrary::WarmUp(GetWorld(), moleculeToSpawn, moleculePoolSize);
-
-	
-	
-	//for (int i = 0; i < 10; i++) {
-	//	FTransform transform = FTransform(FRotator(0, 0, 0), FVector((1000 * i), 0, 0));
-
-	//	AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
-	//	protein->GenerateMoleculeColours(false);
-	//	protein->SetFolder("");
-	//	protein->LoadPDBfromFile("1bna");
-	//}
 }
 
 // Called every frame

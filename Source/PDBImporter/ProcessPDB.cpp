@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 #include <Runtime/Engine/Public/TimerManager.h>
+#include <PoolManager/Public/PoolManagerBPLibrary.h>
 #include "Molecule.h"
 
 AProcessPDB::AProcessPDB() {
@@ -554,21 +555,18 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     TArray<FMolPositions> proteinAPositions = this->GetAtomPositions(this);
     TArray<FMolPositions> proteinBPositions = this->GetAtomPositions(proteinB);
 
-    FActorSpawnParameters SpawnParams;
-    FVector pos = FVector(0, 0, 0);
-    FRotator rot = FRotator(0, 0, 0);
-
     this->GenerateMoleculeColours(true);
     this->RenderMolecules(false);
     blendedProteins.Add(this);
 
     FTimerHandle handle;
 
+    FTransform transform = FTransform(FRotator(0, 0, 0), FVector(0, 0, 0));
+
     for (int i = 0; i < frames; i++) {
 
-        proteinActor = GetWorld()->SpawnActor<AActor>(myProteinToSpawn, pos, rot, SpawnParams);
-        proteinPointer = Cast<AProcessPDB>(proteinActor);
-        proteinPointer->GenerateMoleculeColours(true);
+        AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
+        protein->GenerateMoleculeColours( true );
 
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
@@ -582,34 +580,16 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
                 double y2 = proteinBPositions[j].moleculePositions[m].Y;
                 double z2 = proteinBPositions[j].moleculePositions[m].Z;
 
-                //UE_LOG(LogTemp, Warning, TEXT("Protein A: %d, %d, %d"), x1, y1, z1);
-
                 double newX = x1 + (((x2 - x1) / (frames + 1)) * (i + 1));
                 double newY = y1 + (((y2 - y1) / (frames + 1)) * (i + 1));
                 double newZ = z1 + (((z2 - z1) / (frames + 1)) * (i + 1));
 
-                /*double newX = x1 + (((FMath::Abs(FMath::Abs(x1) - x2)) / (frames + 1)) * i);
-                double newY = y1 + (((FMath::Abs(FMath::Abs(y1) - y2)) / (frames + 1)) * i);
-                double newZ = z1 + (((FMath::Abs(FMath::Abs(z1) - z2)) / (frames + 1)) * i);*/
-
-                //UE_LOG(LogTemp, Warning, TEXT("Protein Blend: %d, %d, %d"), newX, newY, newZ);
-
-                //UE_LOG(LogTemp, Warning, TEXT("Protein B: %d, %d, %d"), x2, y2, z2);
-                //UE_LOG(LogTemp, Warning, TEXT("________________________________________"));
-
                 positions.moleculePositions.Add(FVector(newX, newY, newZ)); 
             }
 
-            /*GetWorld()->GetTimerManager().SetTimer(handle , [&]()
-                {
-                    proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]);
-                }, 3, false);*/
-            
-            //GetWorld()->GetTimerManager().SetTimer(handle, this, &AProcessPDB::CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]), 5.f);
-
-            proteinPointer->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], proteinPointer->colours[j]);
+            protein->CreateMoleculeFromPoints(positions, j, this->GetAMolecules()[j], protein->colours[j]);
         }
-        blendedProteins.Add(proteinPointer);
+        blendedProteins.Add(protein);
     }
 
     proteinB->GenerateMoleculeColours(true);
@@ -634,14 +614,12 @@ void AProcessPDB::GenerateMoleculeColours(bool isStatic) {
 }
 
 void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 molIndex, AMolecule* aMol, FVector molColour) {
-    FActorSpawnParameters SpawnParams;
-    FVector pos = FVector(0, 0, 0);
-    FRotator rot = FRotator(0, 0, 0);
 
-    moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
-    moleculePointer = Cast<AMolecule>(moleculeActor);
+    FTransform transform = FTransform(FRotator(0, 0, 0), FVector(0, 0, 0));
 
-    moleculePointer->SetAtomSize(1.5);			//standard 0.7f
+    AMolecule* molecule = Cast<AMolecule>(UPoolManagerBPLibrary::SpawnActor(this, myMoleculeToSpawn, transform));
+
+    molecule->SetAtomSize(1.5);			//standard 0.7f
 
     TArray<Atom> molAtoms = aMol->GetAtoms();
     
@@ -651,9 +629,9 @@ void AProcessPDB::CreateMoleculeFromPoints(FMolPositions atomPositions, int32 mo
         molAtoms[i].SetAtomPosition( newPos );
     }
     
-    moleculePointer->CreateMoleculeFromAtoms(molAtoms, molColour, false);
-    aMolecules.Add(moleculePointer);
-    this->HideMolecule(moleculePointer, true);
+    molecule->CreateMoleculeFromAtoms(molAtoms, molColour, false);
+    aMolecules.Add(molecule);
+    this->HideMolecule(molecule, true);
 }
 
 void AProcessPDB::HideProtein(AProcessPDB* protein, bool isHidden) {
