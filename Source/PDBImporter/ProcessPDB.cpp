@@ -566,8 +566,8 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     for (int i = 0; i < frames; i++) {
 
         AProcessPDB* protein = Cast<AProcessPDB>(UPoolManagerBPLibrary::SpawnActor(this, myProteinToSpawn, transform));
-        protein->GenerateMoleculeColours( true );
-        //protein->GenerateBlendFrameColours();
+        //protein->GenerateMoleculeColours( true );
+        protein->GenerateBlendFrameColours();
 
         for (int j = 0; j < this->GetAMolecules().Num(); j++) {                         //Each iteration is another molecule within a protein
             FMolPositions positions;
