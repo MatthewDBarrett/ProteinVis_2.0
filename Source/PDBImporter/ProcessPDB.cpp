@@ -4,6 +4,7 @@
 #include <Eigen/Eigenvalues>
 #include <Runtime/Engine/Public/TimerManager.h>
 #include <PoolManager/Public/PoolManagerBPLibrary.h>
+#include "CoreMinimal.h"
 #include "Molecule.h"
 
 AProcessPDB::AProcessPDB() {
@@ -480,7 +481,64 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
     }
 
     PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
-    
+
+    int32 nextIndex = 0;
+
+    for (int i = 0; i < alignMolecules.Num(); i++) {
+        std::vector<std::vector<double>> atomPositions;
+
+        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+            atomPositions.push_back(molsPos[j]);
+        }
+
+        this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
+        //UE_LOG(LogTemp, Warning, TEXT("Adding Molecule: %s"), *alignMolecules[i]->GetName());
+
+        nextIndex += atomCounts[i];
+    }
+
+
+    return alignMolecules;
+}
+
+TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB) {
+    TArray<AMolecule*> alignedMolecules;
+
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+
+    TArray<int32> atomCounts;
+
+    for (AActor* fixedMol : aMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+        for (std::vector<double> pos : atomPositions)
+            fixedMolsPos.push_back(pos);
+    }
+
+    for (AActor* Mol : alignMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+        atomCounts.Add(atomPositions.size());
+        for (std::vector<double> pos : atomPositions)
+            molsPos.push_back(pos);
+    }
+
+    PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+
+    Alignment test = { PointMatch::GetAlignment(fixedMolsPos, molsPos).rotation, PointMatch::GetAlignment(fixedMolsPos, molsPos).translation };
+
+    //UE_LOG(LogTemp, Warning, TEXT("folder: %s proteinA: %s proteinB: %s"), *folder, *proteinA, *proteinB);
+
+    FPairIdentifier id = FPairIdentifier(folder, proteinA, proteinB);
+
+    int32 hash1 = GetTypeHash(folder);
+    int32 hash2 = GetTypeHash(proteinA);
+    int32 hash3 = GetTypeHash(proteinB);
+
+    int32 uniqueHash = HashCombine(HashCombine(hash1, hash2), hash3);
+
+    //UE_LOG(LogTemp, Warning, TEXT("ID: %d"), uniqueHash);
+
+    //alignmentMap.Add(1, test);
+
     int32 nextIndex = 0;
 
     for (int i = 0; i < alignMolecules.Num(); i++) {

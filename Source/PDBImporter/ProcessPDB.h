@@ -6,7 +6,45 @@
 #include "GameFramework/Actor.h"
 #include "PointMatch.h"
 #include "Molecule.h"
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 #include "ProcessPDB.generated.h"
+
+struct Alignment
+{
+	Eigen::Matrix3d rotation;
+	Eigen::Vector3d translation;
+};
+
+USTRUCT()
+struct FPairIdentifier
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString proteinA;
+
+	UPROPERTY()
+	FString proteinB;
+
+	UPROPERTY()
+	FString folderName;
+
+	UPROPERTY()
+	int32 pairIdentifier;
+
+	FPairIdentifier(FString folder, FString pA, FString pB) {
+		folderName = folder;
+		proteinA = pA;
+		proteinB = pB;
+
+		pairIdentifier = FCString::Atoi(*(folderName + proteinA + proteinB));
+	}
+
+	FPairIdentifier() {
+
+	}
+};
 
 UCLASS()
 class PDBIMPORTER_API AProcessPDB : public AActor
@@ -78,6 +116,9 @@ public:
 	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering(TArray<AMolecule*> alignMolecules);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering2(TArray<AMolecule*> alignMolecules, FString folder , FString proteinA, FString proteinB);
+
+	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
 
 	UFUNCTION(BlueprintCallable)
@@ -118,6 +159,8 @@ public:
 
 	PointMatch pointMatch;
 
+	TMap<int, Alignment> alignmentMap;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -140,3 +183,24 @@ struct FMolPositions
 		moleculePositions = {};
 	}
 };
+
+
+
+//USTRUCT()
+//struct FAlignment
+//{
+//	GENERATED_BODY()
+//
+//	UPROPERTY()
+//	Eigen::Matrix3d rotation;
+//
+//	UPROPERTY()
+//	Eigen::Vector3d translation;
+//	
+//
+//	FAlignment() {
+//		rotation = Eigen::Matrix3d();
+//		translation = Eigen::Vector3d();
+//	}
+//};
+
