@@ -521,23 +521,16 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMol
             molsPos.push_back(pos);
     }
 
-    PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+    FPairIdentifier identifier = FPairIdentifier(folder, proteinA, proteinB);
 
-    Alignment test = { PointMatch::GetAlignment(fixedMolsPos, molsPos).rotation, PointMatch::GetAlignment(fixedMolsPos, molsPos).translation };
+    if (alignmentMap.Find(identifier.pairIdentifier) == nullptr) {                          //if alignment is not currently stored in the map
+        PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
+        Alignment alignmentValues = { align.rotation, align.translation };
+        alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
+    }
 
-    //UE_LOG(LogTemp, Warning, TEXT("folder: %s proteinA: %s proteinB: %s"), *folder, *proteinA, *proteinB);
-
-    FPairIdentifier id = FPairIdentifier(folder, proteinA, proteinB);
-
-    int32 hash1 = GetTypeHash(folder);
-    int32 hash2 = GetTypeHash(proteinA);
-    int32 hash3 = GetTypeHash(proteinB);
-
-    int32 uniqueHash = HashCombine(HashCombine(hash1, hash2), hash3);
-
-    //UE_LOG(LogTemp, Warning, TEXT("ID: %d"), uniqueHash);
-
-    //alignmentMap.Add(1, test);
+    Alignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
+    PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues->rotation, alignmentValues->translation);
 
     int32 nextIndex = 0;
 

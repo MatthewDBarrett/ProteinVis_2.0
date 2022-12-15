@@ -38,7 +38,11 @@ struct FPairIdentifier
 		proteinA = pA;
 		proteinB = pB;
 
-		pairIdentifier = FCString::Atoi(*(folderName + proteinA + proteinB));
+		int32 hash1 = GetTypeHash(folder);
+		int32 hash2 = GetTypeHash(pA);
+		int32 hash3 = GetTypeHash(pB);
+
+		pairIdentifier = HashCombine(HashCombine(hash1, hash2), hash3);
 	}
 
 	FPairIdentifier() {

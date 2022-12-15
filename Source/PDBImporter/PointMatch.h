@@ -143,6 +143,21 @@ public:
 
     }
 
+    static void TransformRigidMatchFromStoredValues(const std::vector<std::vector<double > >& pFix,
+        std::vector<std::vector<double > >& pMov, Eigen::Matrix3d R, Eigen::Vector3d t)
+    {
+        assert(pFix.size() == pMov.size());
+        std::vector<Eigen::Vector3d>  pFixE, pMovE;
+
+        pFixE = ToEigenVect(pFix);
+        pMovE = ToEigenVect(pMov);
+
+        ApplyRotation(pMovE, R);
+        ApplyTranslation(pMovE, t);
+
+        pMov = ToSTDVect(pMovE);
+    }
+
     struct Alignment
     {
         Eigen::Matrix3d rotation;
