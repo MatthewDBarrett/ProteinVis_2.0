@@ -309,7 +309,7 @@ void AProcessPDB::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void AProcessPDB::SaveAlignmentMapToFile(TMap<int, Alignment> alignmentMap) {
+void AProcessPDB::SaveAlignmentMapToFile(TMap<int, Alignment> alignMap) {
     // CONVERSION LOGIC
 }
 
