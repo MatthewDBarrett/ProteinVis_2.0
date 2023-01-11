@@ -183,6 +183,10 @@ public:
 
 	void SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap);
 
+	void SaveProteinData();
+
+	void LoadProteinData();
+
 };
 
 USTRUCT()

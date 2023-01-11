@@ -4,6 +4,8 @@
 #include <Eigen/Eigenvalues>
 #include <Runtime/Engine/Public/TimerManager.h>
 #include <PoolManager/Public/PoolManagerBPLibrary.h>
+#include "SaveProteinData.h"
+#include "Kismet/GameplayStatics.h"
 #include "CoreMinimal.h"
 #include "Molecule.h"
 
@@ -311,6 +313,18 @@ void AProcessPDB::Tick(float DeltaTime) {
 
 void AProcessPDB::SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap) {
     // CONVERSION LOGIC
+}
+
+void AProcessPDB::SaveProteinData() {
+    USaveProteinData* saveInstance = Cast<USaveProteinData>(UGameplayStatics::CreateSaveGameObject(USaveProteinData::StaticClass()));
+    saveInstance->alignmentMap = this->alignmentMap;
+    UGameplayStatics::SaveGameToSlot(saveInstance, TEXT("MySlot"), 0);
+}
+
+void AProcessPDB::LoadProteinData() {
+    USaveProteinData* saveInstance = Cast<USaveProteinData>(UGameplayStatics::CreateSaveGameObject(USaveProteinData::StaticClass()));
+    saveInstance = Cast<USaveProteinData>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+    this->alignmentMap = saveInstance->alignmentMap;
 }
 
 TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
