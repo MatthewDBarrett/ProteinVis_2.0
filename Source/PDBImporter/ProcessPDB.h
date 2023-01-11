@@ -10,10 +10,18 @@
 #include <Eigen/Eigenvalues>
 #include "ProcessPDB.generated.h"
 
-struct Alignment
+USTRUCT()
+struct FAlignment
 {
+	GENERATED_BODY()
+		
 	Eigen::Matrix3d rotation;
 	Eigen::Vector3d translation;
+
+	FAlignment() {
+		rotation = Eigen::Matrix3d();
+		translation = Eigen::Vector3d();
+	}
 };
 
 USTRUCT()
@@ -163,7 +171,7 @@ public:
 
 	PointMatch pointMatch;
 
-	TMap<int, Alignment> alignmentMap;
+	TMap<int, FAlignment> alignmentMap;
 
 protected:
 	// Called when the game starts or when spawned
@@ -173,7 +181,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SaveAlignmentMapToFile(TMap<int, Alignment> alignMap);
+	void SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap);
 
 };
 

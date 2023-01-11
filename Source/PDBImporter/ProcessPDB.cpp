@@ -309,7 +309,7 @@ void AProcessPDB::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void AProcessPDB::SaveAlignmentMapToFile(TMap<int, Alignment> alignMap) {
+void AProcessPDB::SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap) {
     // CONVERSION LOGIC
 }
 
@@ -529,13 +529,15 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMol
 
     if (alignmentMap.Find(identifier.pairIdentifier) == nullptr) {                          //if alignment is not currently stored in the map
         PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
-        Alignment alignmentValues = { align.rotation, align.translation };
+        FAlignment alignmentValues;
+        alignmentValues.rotation = align.rotation;
+        alignmentValues.translation = align.translation;
         alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
     }
 
     //SAVE ALIGNMENT MAP
 
-    Alignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
+    FAlignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
     PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues->rotation, alignmentValues->translation);
 
     int32 nextIndex = 0;
