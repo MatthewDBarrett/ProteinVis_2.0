@@ -520,56 +520,79 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
 }
 
 TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB) {
+
     TArray<AMolecule*> alignedMolecules;
 
-    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+    //TArray<int32> atomCounts;
+    //FPairIdentifier identifier = FPairIdentifier(folder, proteinA, proteinB);
+    //std::vector<std::vector<double>> fixedMolsPos, molsPos;
+    //
+    //this->LoadProteinData();
 
-    TArray<int32> atomCounts;
+    //if (alignmentMap.Num() > 0) {                                                               //Previously saved alignments have been found
 
-    for (AActor* fixedMol : aMolecules) {
-        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
-        for (std::vector<double> pos : atomPositions)
-            fixedMolsPos.push_back(pos);
-    }
+    //    if (alignmentMap.Find(identifier.pairIdentifier) == nullptr) {                          //if alignment is not currently stored in the map
+    //        
+    //        for (AActor* fixedMol : aMolecules) {
+    //            std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+    //            for (std::vector<double> pos : atomPositions)
+    //                fixedMolsPos.push_back(pos);
+    //        }
 
-    for (AActor* Mol : alignMolecules) {
-        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
-        atomCounts.Add(atomPositions.size());
-        for (std::vector<double> pos : atomPositions)
-            molsPos.push_back(pos);
-    }
+    //        for (AActor* Mol : alignMolecules) {
+    //            std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+    //            atomCounts.Add(atomPositions.size());
+    //            for (std::vector<double> pos : atomPositions)
+    //                molsPos.push_back(pos);
+    //        }
 
-    FPairIdentifier identifier = FPairIdentifier(folder, proteinA, proteinB);
+    //        PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
+    //        FAlignment alignmentValues;
+    //        alignmentValues.rotation = align.rotation;
+    //        alignmentValues.translation = align.translation;
+    //        alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
 
-    if (alignmentMap.Find(identifier.pairIdentifier) == nullptr) {                          //if alignment is not currently stored in the map
-        PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
-        FAlignment alignmentValues;
-        alignmentValues.rotation = align.rotation;
-        alignmentValues.translation = align.translation;
-        alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
-    }
+    //    } else {                                                                                //Existing alignment found for pair
+    //        FAlignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
+    //        PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues->rotation, alignmentValues->translation);
+    //    }
 
-    //SAVE ALIGNMENT MAP
+    //    int32 nextIndex = 0;
 
-    FAlignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
-    PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues->rotation, alignmentValues->translation);
+    //    for (int i = 0; i < alignMolecules.Num(); i++) {
+    //        std::vector<std::vector<double>> atomPositions;
 
-    int32 nextIndex = 0;
+    //        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+    //            atomPositions.push_back(molsPos[j]);
+    //        }
 
-    for (int i = 0; i < alignMolecules.Num(); i++) {
-        std::vector<std::vector<double>> atomPositions;
+    //        this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
 
-        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
-            atomPositions.push_back(molsPos[j]);
-        }
+    //        nextIndex += atomCounts[i];
+    //    }
 
-        this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
-        //UE_LOG(LogTemp, Warning, TEXT("Adding Molecule: %s"), *alignMolecules[i]->GetName());
+    //} else {                                                                                    //No Previously saved alignments
 
-        nextIndex += atomCounts[i];
-    }
+    //    for (AActor* fixedMol : aMolecules) {
+    //        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+    //        for (std::vector<double> pos : atomPositions)
+    //            fixedMolsPos.push_back(pos);
+    //    }
 
+    //    for (AActor* Mol : alignMolecules) {
+    //        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+    //        atomCounts.Add(atomPositions.size());
+    //        for (std::vector<double> pos : atomPositions)
+    //            molsPos.push_back(pos);
+    //    }
 
+    //    PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
+    //    FAlignment alignmentValues;
+    //    alignmentValues.rotation = align.rotation;
+    //    alignmentValues.translation = align.translation;
+    //    alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
+    //}
+        
     return alignMolecules;
 }
 
