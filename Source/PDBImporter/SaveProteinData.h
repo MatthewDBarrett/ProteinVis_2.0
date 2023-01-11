@@ -14,10 +14,14 @@ public:
 
 	USaveProteinData();
 
-	UPROPERTY(EditAnywhere)
-	TMap<int, FAlignment> alignmentMap;
+	//UPROPERTY(EditAnywhere)
+	TMap<int, FAlignment> savedAlignmentMap;
 
-	void AddAlignmentToMap(int key, FAlignment alignment);
+	//void AddAlignmentToMap(int key, FAlignment alignment);
 
-	FAlignment* GetAlignmentFromMap(FPairIdentifier identifier);	
+	//FAlignment* GetAlignmentFromMap(FPairIdentifier identifier);
+
+	bool isAlignmentMapEmpty();
+
+	TMap<int, FAlignment> GetAlignmentMap();
 };

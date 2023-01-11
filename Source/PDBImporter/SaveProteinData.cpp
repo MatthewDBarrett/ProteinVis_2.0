@@ -1,13 +1,21 @@
 #include "SaveProteinData.h"
 
 USaveProteinData::USaveProteinData() {
-
 }
 
-void USaveProteinData::AddAlignmentToMap(int key, FAlignment alignment) {
-	alignmentMap.Add(key, alignment);
+//void USaveProteinData::AddAlignmentToMap(int key, FAlignment alignment) {
+//	savedAlignmentMap.Add(key, alignment);
+//}
+//
+//FAlignment* USaveProteinData::GetAlignmentFromMap(FPairIdentifier identifier) {
+//	return savedAlignmentMap.Find(identifier.pairIdentifier);
+//}
+
+bool USaveProteinData::isAlignmentMapEmpty() {
+	if (&savedAlignmentMap != nullptr)
+		return false;
+	else
+		return true;
 }
 
-FAlignment* USaveProteinData::GetAlignmentFromMap(FPairIdentifier identifier) {
-	return alignmentMap.Find(identifier.pairIdentifier);
-}
+TMap<int, FAlignment> USaveProteinData::GetAlignmentMap() { return savedAlignmentMap; }
