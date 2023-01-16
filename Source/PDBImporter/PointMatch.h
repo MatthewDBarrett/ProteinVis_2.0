@@ -177,6 +177,11 @@ public:
         Eigen::Vector3d t;
         ComputeLeastSquaresRigidMotion(pFixE, pMovE, R, t);
 
+        ApplyRotation(pMovE, R);
+        ApplyTranslation(pMovE, t);
+
+        pMov = ToSTDVect(pMovE);
+
         Alignment result = { R, t };
         return result;
     }

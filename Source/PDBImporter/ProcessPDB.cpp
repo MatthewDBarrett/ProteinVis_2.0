@@ -305,6 +305,8 @@ void AProcessPDB::PointMatchTest() {
 
 void AProcessPDB::BeginPlay() {
     Super::BeginPlay();
+
+    saveString = "savetest-15";
 }
 
 void AProcessPDB::Tick(float DeltaTime) {
@@ -315,20 +317,43 @@ void AProcessPDB::SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap) {
     // CONVERSION LOGIC
 }
 
-void AProcessPDB::SaveProteinData() {
+void AProcessPDB::SaveProteinData(int key, FAlignment alignData) {
+    USaveProteinData* loadInstance;
     USaveProteinData* saveInstance = Cast<USaveProteinData>(UGameplayStatics::CreateSaveGameObject(USaveProteinData::StaticClass()));
-    saveInstance->savedAlignmentMap = this->alignmentMap;
-    UGameplayStatics::SaveGameToSlot(saveInstance, TEXT("MySlot"), 0);
+
+    if (UGameplayStatics::DoesSaveGameExist(saveString, 0)) {
+        loadInstance = Cast<USaveProteinData>(UGameplayStatics::LoadGameFromSlot(saveString, 0));
+
+        TMap<int, FAlignment> loadedMap = loadInstance->GetAlignmentMap();
+        loadedMap.Add(key, alignData);
+
+        saveInstance->SetAlignmentMap(loadedMap);
+        saveInstance->atomAmount = this->atomAmount;
+
+    } else {
+        TMap<int, FAlignment> newMap;
+        newMap.Add(key, alignData);
+
+        saveInstance->SetAlignmentMap(newMap);
+        saveInstance->atomAmount = this->atomAmount;
+    }
+
+    UGameplayStatics::SaveGameToSlot(saveInstance, saveString, 0);
 }
 
-void AProcessPDB::LoadProteinData() {
-    USaveProteinData* saveInstance = Cast<USaveProteinData>(UGameplayStatics::CreateSaveGameObject(USaveProteinData::StaticClass()));
-    saveInstance = Cast<USaveProteinData>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+bool AProcessPDB::LoadProteinData() {
+    USaveProteinData* loadInstance;
 
-    if ( saveInstance )
-        if (!saveInstance->isAlignmentMapEmpty()) {
-            alignmentMap = saveInstance->GetAlignmentMap();
-        }
+    if (UGameplayStatics::DoesSaveGameExist(saveString, 0)) {
+        loadInstance = Cast<USaveProteinData>(UGameplayStatics::LoadGameFromSlot(saveString, 0));
+    } else {
+        return false;
+    }
+
+    this->alignmentMap = loadInstance->GetAlignmentMap();
+    this->atomAmount = loadInstance->atomAmount;
+
+    return true;
 }
 
 TArray<AActor*> AProcessPDB::GetMolecules() { return molecules; }
@@ -519,6 +544,18 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering(TArray<AMole
         nextIndex += atomCounts[i];
     }
 
+    //USaveProteinData* saveInstance = Cast<USaveProteinData>(UGameplayStatics::CreateSaveGameObject(USaveProteinData::StaticClass()));
+
+    //saveInstance->SetTestNum(42);
+
+    //UGameplayStatics::SaveGameToSlot(saveInstance, "MySlot1", 0);
+
+
+   /* USaveProteinData* loadInstance = Cast<USaveProteinData>(UGameplayStatics::LoadGameFromSlot(TEXT("MySlot1"), 0));
+    UE_LOG(LogTemp, Warning, TEXT("Test Num: %d"), loadInstance->testNum);*/
+
+
+
 
     return alignMolecules;
 }
@@ -527,42 +564,30 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMol
 
     TArray<AMolecule*> alignedMolecules;
 
-    TArray<int32> atomCounts;
     FPairIdentifier identifier = FPairIdentifier(folder, proteinA, proteinB);
     std::vector<std::vector<double>> fixedMolsPos, molsPos;
     
     this->LoadProteinData();
 
+    bool alignmentFound = false;
+
+    FAlignment alignmentValues;
+
+    atomAmount.Empty();
+
     if (alignmentMap.Num() > 0) {                                                               //Previously saved alignments have been found
-
+        UE_LOG(LogTemp, Warning, TEXT("Previously saved alignments have been found"));
         if (alignmentMap.Find(identifier.pairIdentifier) == nullptr) {                          //if alignment is not currently stored in the map
-            
-            for (AActor* fixedMol : aMolecules) {
-                std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
-                for (std::vector<double> pos : atomPositions)
-                    fixedMolsPos.push_back(pos);
-            }
-
-            for (AActor* Mol : alignMolecules) {
-                std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
-                atomCounts.Add(atomPositions.size());
-                for (std::vector<double> pos : atomPositions)
-                    molsPos.push_back(pos);
-            }
-
-            PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
-            FAlignment alignmentValues;
-            alignmentValues.rotation = align.rotation;
-            alignmentValues.translation = align.translation;
-            alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
-
+            UE_LOG(LogTemp, Warning, TEXT("current alignment not found in stored map"));
         } else {                                                                                //Existing alignment found for pair
-            FAlignment* alignmentValues = alignmentMap.Find(identifier.pairIdentifier);
-            PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues->rotation, alignmentValues->translation);
+            UE_LOG(LogTemp, Warning, TEXT("Existing alignment found for pair"));
+            alignmentFound = true;
         }
-
     } else {                                                                                    //No Previously saved alignments
+        UE_LOG(LogTemp, Warning, TEXT("No previously saved alignments"));
+    }
 
+    if (!alignmentFound) {
         for (AActor* fixedMol : aMolecules) {
             std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
             for (std::vector<double> pos : atomPositions)
@@ -571,34 +596,105 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering2(TArray<AMol
 
         for (AActor* Mol : alignMolecules) {
             std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
-            atomCounts.Add(atomPositions.size());
+            atomAmount.Add(atomPositions.size());
             for (std::vector<double> pos : atomPositions)
                 molsPos.push_back(pos);
         }
 
         PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
-        FAlignment alignmentValues;
         alignmentValues.rotation = align.rotation;
         alignmentValues.translation = align.translation;
         alignmentMap.Add(identifier.pairIdentifier, alignmentValues);
+    } else {
+        alignmentValues = *alignmentMap.Find(identifier.pairIdentifier);
+        PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues.rotation, alignmentValues.translation);
     }
 
-    this->SaveProteinData();
+    if (atomAmount.Num() == 0) {
+        for (AActor* Mol : alignMolecules) {
+            std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+            atomAmount.Add(atomPositions.size());
+        }
+    }
+
+    this->SaveProteinData(identifier.pairIdentifier, alignmentValues);
 
     int32 nextIndex = 0;
 
     for (int i = 0; i < alignMolecules.Num(); i++) {
         std::vector<std::vector<double>> atomPositions;
 
-        for (int j = nextIndex; j < nextIndex + atomCounts[i]; j++) {
+        for (int j = nextIndex; j < nextIndex + atomAmount[i]; j++) {
             atomPositions.push_back(molsPos[j]);
         }
 
         this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
 
-        nextIndex += atomCounts[i];
+        nextIndex += atomAmount[i];
     }
         
+    return alignMolecules;
+}
+
+TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering3(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB) {
+
+    std::vector<std::vector<double>> fixedMolsPos, molsPos;
+
+    atomAmount.Empty();
+    
+    FPairIdentifier identifier = FPairIdentifier(folder, proteinA, proteinB);
+    FAlignment alignmentValues;
+    bool alignmentFound = false;    
+
+    for (AActor* fixedMol : aMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(fixedMol)->GetAtomPositions();
+        for (std::vector<double> pos : atomPositions)
+            fixedMolsPos.push_back(pos);
+    }
+
+    for (AActor* Mol : alignMolecules) {
+        std::vector<std::vector<double>> atomPositions = Cast<AMolecule>(Mol)->GetAtomPositions();
+        atomAmount.Add(atomPositions.size());
+        for (std::vector<double> pos : atomPositions)
+            molsPos.push_back(pos);
+    }
+
+    if (this->LoadProteinData()) {
+        UE_LOG(LogTemp, Warning, TEXT("previous saves found - %d - %d"), alignmentMap.Num(), identifier.pairIdentifier);
+        if (alignmentMap.Find(identifier.pairIdentifier) != nullptr) {
+            FAlignment* fVal = alignmentMap.Find(identifier.pairIdentifier);
+            PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, fVal->rotation, fVal->translation);
+            alignmentFound = true;
+
+            UE_LOG(LogTemp, Warning, TEXT("alignment found - %d"), identifier.pairIdentifier);
+        }   
+    }
+
+    if (!alignmentFound) {
+        PointMatch::Alignment align = PointMatch::GetAlignment(fixedMolsPos, molsPos);
+        //PointMatch::TrasformRigidMatch(fixedMolsPos, molsPos);
+        
+        alignmentValues.rotation = align.rotation;
+        alignmentValues.translation = align.translation;
+
+        //PointMatch::TransformRigidMatchFromStoredValues(fixedMolsPos, molsPos, alignmentValues.rotation, alignmentValues.translation);
+
+        //this->SaveProteinData(identifier.pairIdentifier, alignmentValues);
+    }
+
+    int32 nextIndex = 0;
+
+    for (int i = 0; i < alignMolecules.Num(); i++) {
+        std::vector<std::vector<double>> atomPositions;
+        for (int j = nextIndex; j < nextIndex + atomAmount[i]; j++) {
+            atomPositions.push_back(molsPos[j]);
+        }
+
+        this->GetUpdatedMoleculeWithoutRendering(Cast<AMolecule>(alignMolecules[i]), atomPositions, i);
+
+        nextIndex += atomAmount[i];
+    }
+
     return alignMolecules;
 }
 

@@ -94,6 +94,8 @@ public:
 
 	AProcessPDB* proteinPointer;
 
+	TArray<int32> atomAmount;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> myMoleculeToSpawn;
 
@@ -129,6 +131,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering2(TArray<AMolecule*> alignMolecules, FString folder , FString proteinA, FString proteinB);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering3(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB);
 
 	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
@@ -173,6 +178,8 @@ public:
 
 	TMap<int, FAlignment> alignmentMap;
 
+	FString saveString;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -183,9 +190,9 @@ public:
 
 	void SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap);
 
-	void SaveProteinData();
+	void SaveProteinData(int key, FAlignment alignData);
 
-	void LoadProteinData();
+	bool LoadProteinData();
 
 };
 

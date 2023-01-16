@@ -14,14 +14,30 @@ public:
 
 	USaveProteinData();
 
-	//UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TMap<int, FAlignment> savedAlignmentMap;
 
-	//void AddAlignmentToMap(int key, FAlignment alignment);
+	UPROPERTY(VisibleAnywhere)
+	TArray<int32> atomAmount;
+
+	void AddAlignmentToMap(int key, FAlignment alignment);
 
 	//FAlignment* GetAlignmentFromMap(FPairIdentifier identifier);
 
-	bool isAlignmentMapEmpty();
+	bool isAlignmentMapValid();
 
 	TMap<int, FAlignment> GetAlignmentMap();
+
+	void SetAlignmentMap(TMap<int, FAlignment> map);
+
+	UPROPERTY(VisibleAnywhere)
+	int32 testNum;
+
+	void SetTestNum(int32 value);
+
+	//bool Save(int key, FAlignment alignment);
+	//static USaveProteinData* Load();
+
+private:
+
 };
