@@ -699,24 +699,20 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering3(TArray<AMol
     return alignMolecules;
 }
 
-void AProcessPDB::MultiMatchTest(TArray<AProcessPDB*> proteins) {
-
-    MultipleMatch MMatch = this->InitMultiMatchFromProteins(proteins);
-
+void AProcessPDB::MultiMatchTest() {
     size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
-    for (int i = 0; i < proteins.Num(); i++) {
+    for (int i = 0; i < 25; i++) {
         MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
         UE_LOG(LogTemp, Warning, TEXT("Label: %d  error: %f"), curr_label, curr_error);
     }
 }
 
-MultipleMatch AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
-    MultipleMatch MMatch;
-
+void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     std::vector<std::vector<std::vector<double>>> PClouds;
+    proteinCount = proteins.Num();
 
     int32 proteinsNum = proteins.Num();
     int32 moleculeNum = 0;
@@ -754,8 +750,21 @@ MultipleMatch AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> prote
     }
 
     MMatch.InitMatches(PClouds);
+}
 
-    return MMatch;
+TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
+    TArray<int> nearestProteins;
+
+    size_t curr_label;
+    double curr_error;
+    std::vector<std::vector<double > > TransfPoint;
+
+    for (int i = 0; i < proteinCount; i++) {
+        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+        nearestProteins.Add(curr_label);
+    }
+
+    return nearestProteins;
 }
 
 float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> alignedMolecules) {

@@ -137,9 +137,13 @@ public:
 	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering3(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB);
 
 	UFUNCTION(BlueprintCallable)
-	void MultiMatchTest(TArray<AProcessPDB*> proteins);
+	void MultiMatchTest();
 
-	MultipleMatch InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
+	UFUNCTION(BlueprintCallable)
+	void InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<int> GetNearestProteinsByIndex(int32 targetIndex);
 
 	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
@@ -187,6 +191,10 @@ public:
 	FString saveString;
 
 	TArray<int32> atomCountsPerMol;
+
+	MultipleMatch MMatch;
+
+	int32 proteinCount;
 
 protected:
 	// Called when the game starts or when spawned
