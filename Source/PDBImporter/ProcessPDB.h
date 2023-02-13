@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PointMatch.h"
 #include "Molecule.h"
+#include "multiple_match.h"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 #include "ProcessPDB.generated.h"
@@ -138,6 +139,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MultiMatchTest(TArray<AProcessPDB*> proteins);
 
+	MultipleMatch InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
+
 	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
 
@@ -182,6 +185,8 @@ public:
 	TMap<int, FAlignment> alignmentMap;
 
 	FString saveString;
+
+	TArray<int32> atomCountsPerMol;
 
 protected:
 	// Called when the game starts or when spawned

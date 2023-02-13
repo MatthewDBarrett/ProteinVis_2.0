@@ -700,13 +700,27 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering3(TArray<AMol
 }
 
 void AProcessPDB::MultiMatchTest(TArray<AProcessPDB*> proteins) {
+
+    MultipleMatch MMatch = this->InitMultiMatchFromProteins(proteins);
+
+    size_t curr_label;
+    double curr_error;
+    std::vector<std::vector<double > > TransfPoint;
+
+    for (int i = 0; i < proteins.Num(); i++) {
+        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+        UE_LOG(LogTemp, Warning, TEXT("Label: %d  error: %f"), curr_label, curr_error);
+    }
+}
+
+MultipleMatch AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     MultipleMatch MMatch;
 
     std::vector<std::vector<std::vector<double>>> PClouds;
 
     int32 proteinsNum = proteins.Num();
     int32 moleculeNum = 0;
-    TArray<int32> atomCounts;
+    atomCountsPerMol.Empty();
     AMolecule* mol;
     TArray<AMolecule*> mols;
     std::vector<std::vector<double>> atomPositions;
@@ -719,10 +733,10 @@ void AProcessPDB::MultiMatchTest(TArray<AProcessPDB*> proteins) {
 
         PClouds[i].resize(moleculeNum);
         for (int j = 0; j < moleculeNum; j++) {                         //for every molecule in a protein
-            mol = mols[j];  
+            mol = mols[j];
 
             if (i == proteinsNum - 1)                                   //if it is the last protein, store the atom counts
-                atomCounts.Add(mol->atoms.Num());
+                atomCountsPerMol.Add(mol->atoms.Num());
 
             atomPositions = Cast<AMolecule>(mol)->GetAtomPositions();
 
@@ -740,6 +754,8 @@ void AProcessPDB::MultiMatchTest(TArray<AProcessPDB*> proteins) {
     }
 
     MMatch.InitMatches(PClouds);
+
+    return MMatch;
 }
 
 float AProcessPDB::GetSqrDisSum(TArray<AMolecule*> alignedMolecules) {
