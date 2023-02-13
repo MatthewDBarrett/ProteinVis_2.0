@@ -136,6 +136,9 @@ public:
 	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering3(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB);
 
 	UFUNCTION(BlueprintCallable)
+	void MultiMatchTest(TArray<AProcessPDB*> proteins);
+
+	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
 
 	UFUNCTION(BlueprintCallable)
