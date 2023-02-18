@@ -723,33 +723,72 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
 
     PClouds.resize(proteinsNum);
 
-    for (int i = 0; i < proteinsNum; i++) {                             //for every protein
+    int atomCount = 0;
+
+    for (int i = 0; i < proteinsNum; i++) {
         mols = proteins[i]->GetAMolecules();
         moleculeNum = mols.Num();
 
-        PClouds[i].resize(moleculeNum);
-        for (int j = 0; j < moleculeNum; j++) {                         //for every molecule in a protein
+        atomCount = 0;
+
+        for (int j = 0; j < moleculeNum; j++) {
             mol = mols[j];
 
-            if (i == proteinsNum - 1)                                   //if it is the last protein, store the atom counts
+            if (i == 0) {
                 atomCountsPerMol.Add(mol->atoms.Num());
+            }
 
             atomPositions = Cast<AMolecule>(mol)->GetAtomPositions();
 
-            //PClouds[i][j].resize(atomPositions.size());
+            for (int m = 0; m < atomPositions.size(); m++) {
+                PClouds[i].resize(atomCount + 1);
 
-            for (int m = 0; m < atomPositions.size(); m++) {            //for each atom position within a molecule
                 std::vector<double> pos = atomPositions[m];
                 if (pos.size() > 0) {
-                    PClouds[i][j].push_back(pos[0]);
-                    PClouds[i][j].push_back(pos[1]);
-                    PClouds[i][j].push_back(pos[2]);
+                    PClouds[i][atomCount].push_back(pos[0]);
+                    PClouds[i][atomCount].push_back(pos[1]);
+                    PClouds[i][atomCount].push_back(pos[2]);
                 }
+                atomCount++;
             }
         }
     }
 
+    //for (int i = 0; i < PClouds.size(); i++) {
+    //    UE_LOG(LogTemp, Warning, TEXT("Protein"));
+    //    for (int j = 0; j < PClouds[i].size(); j++) {
+    //        UE_LOG(LogTemp, Warning, TEXT("Atom"));
+    //        for (int m = 0; m < PClouds[i][j].size(); m++) {
+    //            UE_LOG(LogTemp, Warning, TEXT("pos: %f , %f , %f"), PClouds[i][j][0], PClouds[i][j][1], PClouds[i][j][2]);
+    //        }
+    //    }
+    //}
+
     MMatch.InitMatches(PClouds);
+}
+
+TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
+    TArray<AProcessPDB*> nearestProteinMatches;
+
+    size_t curr_label;
+    double curr_error;
+    std::vector<std::vector<double > > TransfPoint;
+
+  /*  for (int i = 0; i < 25; i++) {
+        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+
+    }*/
+
+    MMatch.GetSurtedSequencePoint(0, 1, curr_label, curr_error, TransfPoint);
+
+    //for (int i = 0; i < TransfPoint.size(); i++) {
+    //    UE_LOG(LogTemp, Warning, TEXT("TransfPoint: %d"), i);
+    //    for (int j = 0; j < TransfPoint[i].size(); j++) {
+    //        UE_LOG(LogTemp, Warning, TEXT("Double: %f"), TransfPoint[i][j]);
+    //    }
+    //}
+
+    return nearestProteinMatches;
 }
 
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
