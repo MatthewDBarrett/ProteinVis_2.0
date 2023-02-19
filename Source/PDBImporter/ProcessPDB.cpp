@@ -704,13 +704,15 @@ void AProcessPDB::MultiMatchTest() {
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < storedProteins.Num(); i++) {
         MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
         UE_LOG(LogTemp, Warning, TEXT("Label: %d  error: %f"), curr_label, curr_error);
     }
 }
 
 void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
+    storedProteins = proteins;
+
     std::vector<std::vector<std::vector<double>>> PClouds;
     proteinCount = proteins.Num();
 
@@ -768,27 +770,61 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
 }
 
 TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
-    TArray<AProcessPDB*> nearestProteinMatches;
-
     size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
-  /*  for (int i = 0; i < 25; i++) {
+    std::vector<std::vector<std::vector<std::vector<double > >>> proteinCloud;              //Proteins, Molecules, Atoms, Positions
+
+    AProcessPDB* selectedProtein;
+
+    proteinCloud.resize(storedProteins.Num());
+
+    for (int i = 0; i < storedProteins.Num(); i++) {
         MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
 
-    }*/
+        selectedProtein = storedProteins[curr_label];
 
-    MMatch.GetSurtedSequencePoint(0, 1, curr_label, curr_error, TransfPoint);
+        int atomCount = TransfPoint.size();
 
-    //for (int i = 0; i < TransfPoint.size(); i++) {
-    //    UE_LOG(LogTemp, Warning, TEXT("TransfPoint: %d"), i);
-    //    for (int j = 0; j < TransfPoint[i].size(); j++) {
-    //        UE_LOG(LogTemp, Warning, TEXT("Double: %f"), TransfPoint[i][j]);
-    //    }
-    //}
+        proteinCloud[i].resize(selectedProtein->GetAMolecules().Num());
 
-    return nearestProteinMatches;
+        int count = 0;
+        int atomsInMol = 1;
+
+        proteinCloud[i][0].resize(atomCountsPerMol[0]);
+
+        for (int j = 0; j < atomCount; j++) {
+            
+            if (atomsInMol - 1 == atomCountsPerMol[count]) {
+                count++;
+                atomsInMol = 1;
+                proteinCloud[i][count].resize(atomCountsPerMol[count]);                      
+            }
+            
+            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
+            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
+            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
+
+            atomsInMol++;
+        }
+    }
+
+
+
+    for (int i = 0; i < storedProteins.Num(); i++) {
+        selectedProtein = storedProteins[i];
+
+        TArray<AMolecule*> mols = selectedProtein->GetAMolecules();
+
+        for (int j = 0; j < mols.Num(); j++) {
+            std::vector<std::vector<double>> atomPositions = proteinCloud[i][j];
+
+            this->GetUpdatedMoleculeWithoutRendering(mols[j], atomPositions, 0);
+        }
+    }
+
+    return storedProteins;
 }
 
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
