@@ -780,10 +780,14 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
 
     proteinCloud.resize(storedProteins.Num());
 
+    std::vector<int> matchOrder;
+
     for (int i = 0; i < storedProteins.Num(); i++) {
         MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
 
         selectedProtein = storedProteins[curr_label];
+
+        matchOrder.push_back(curr_label);
 
         int atomCount = TransfPoint.size();
 
@@ -824,7 +828,13 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
         }
     }
 
-    return storedProteins;
+    TArray<AProcessPDB*> result;
+
+    for (int i = 0; i < matchOrder.size(); i++) {
+        result.Add(storedProteins[matchOrder[i]]);
+    }
+
+    return result;
 }
 
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
