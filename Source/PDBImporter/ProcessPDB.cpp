@@ -437,24 +437,24 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
 
         atomCount = TransfPoint.size();
 
-        proteinCloud[i].resize(selectedProtein->GetAMolecules().Num());
+        proteinCloud[curr_label].resize(selectedProtein->GetAMolecules().Num());
 
         count = 0;
         atomsInMol = 1;
 
-        proteinCloud[i][0].resize(atomCountsPerMol[0]);
+        proteinCloud[curr_label][0].resize(atomCountsPerMol[0]);
 
         for (int j = 0; j < atomCount; j++) {
             
             if (atomsInMol - 1 == atomCountsPerMol[count]) {
                 count++;
                 atomsInMol = 1;
-                proteinCloud[i][count].resize(atomCountsPerMol[count]);                      
+                proteinCloud[curr_label][count].resize(atomCountsPerMol[count]);
             }
-            
-            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
-            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
-            proteinCloud[i][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
+
+            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
+            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
+            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
 
             atomsInMol++;
         }
