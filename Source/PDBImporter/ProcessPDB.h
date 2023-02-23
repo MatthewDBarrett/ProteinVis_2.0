@@ -185,8 +185,6 @@ public:
 
 	TArray<FVector> colours;
 
-	void PointMatchTest();
-
 	PointMatch pointMatch;
 
 	TMap<int, FAlignment> alignmentMap;
