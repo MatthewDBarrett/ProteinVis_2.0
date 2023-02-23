@@ -6,14 +6,23 @@
 #include "GameFramework/Actor.h"
 #include "PointMatch.h"
 #include "Molecule.h"
+#include "multiple_match.h"
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 #include "ProcessPDB.generated.h"
 
-struct Alignment
+USTRUCT()
+struct FAlignment
 {
+	GENERATED_BODY()
+		
 	Eigen::Matrix3d rotation;
 	Eigen::Vector3d translation;
+
+	FAlignment() {
+		rotation = Eigen::Matrix3d();
+		translation = Eigen::Vector3d();
+	}
 };
 
 USTRUCT()
@@ -86,6 +95,8 @@ public:
 
 	AProcessPDB* proteinPointer;
 
+	TArray<int32> atomAmount;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> myMoleculeToSpawn;
 
@@ -121,6 +132,21 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering2(TArray<AMolecule*> alignMolecules, FString folder , FString proteinA, FString proteinB);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AMolecule*> GetAlignedMoleculesWithoutRendering3(TArray<AMolecule*> alignMolecules, FString folder, FString proteinA, FString proteinB);
+
+	UFUNCTION(BlueprintCallable)
+	void MultiMatchTest();
+
+	UFUNCTION(BlueprintCallable)
+	void InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AProcessPDB*> GetNearestMatchProteins(int32 target);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<int> GetNearestProteinsByIndex(int32 targetIndex);
 
 	UFUNCTION(BlueprintCallable)
     float GetSqrDisSum(TArray<AMolecule*> alignedMolecules);
@@ -159,11 +185,19 @@ public:
 
 	TArray<FVector> colours;
 
-	void PointMatchTest();
-
 	PointMatch pointMatch;
 
-	TMap<int, Alignment> alignmentMap;
+	TMap<int, FAlignment> alignmentMap;
+
+	FString saveString;
+
+	TArray<int32> atomCountsPerMol;
+
+	MultipleMatch MMatch;
+
+	int32 proteinCount;
+
+	TArray<AProcessPDB*> storedProteins;
 
 protected:
 	// Called when the game starts or when spawned
@@ -173,7 +207,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SaveAlignmentMapToFile(TMap<int, Alignment> alignmentMap);
+	void SaveAlignmentMapToFile(TMap<int, FAlignment> alignMap);
+
+	void SaveProteinData(int key, FAlignment alignData);
+
+	bool LoadProteinData();
 
 };
 

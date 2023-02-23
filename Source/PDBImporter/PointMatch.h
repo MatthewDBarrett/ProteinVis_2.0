@@ -14,7 +14,7 @@ class PointMatch
  * Olga Sorkine-Hornung and Michael Rabinovich
  * Least-Squares Rigid Motion Using SVD
  */
-    static void ComputeLeastSquaresRigidMotion(const std::vector<Eigen::Vector3d>& pFix,
+    static void ComputeLeastSquaresRigidMotionEigen(const std::vector<Eigen::Vector3d>& pFix,
         const std::vector<Eigen::Vector3d>& pMov,
         Eigen::Matrix3d& R,
         Eigen::Vector3d& t)
@@ -55,42 +55,6 @@ class PointMatch
         t = avgQ - R * avgP;
     }
 
-    static std::vector<double > ToSTDVect(const Eigen::Vector3d& P)
-    {
-        std::vector<double > ret;
-        ret.push_back(P[0]);
-        ret.push_back(P[1]);
-        ret.push_back(P[2]);
-        return ret;
-    }
-
-    static std::vector<std::vector<double > > ToSTDVect(const std::vector<Eigen::Vector3d>& P)
-    {
-        std::vector<std::vector<double > > ret;
-        for (size_t i = 0; i < P.size(); i++)
-            ret.push_back(ToSTDVect(P[i]));
-        return ret;
-    }
-
-    static void ApplyTranslation(std::vector<Eigen::Vector3d>& Pos,
-        Eigen::Vector3d& t)
-    {
-        for (size_t i = 0; i < Pos.size(); i++)
-        {
-            Pos[i][0] += t[0];
-            Pos[i][1] += t[1];
-            Pos[i][2] += t[2];
-        }
-    }
-
-    static void ApplyRotation(std::vector<Eigen::Vector3d>& Pos, Eigen::Matrix3d& R)
-    {
-        for (size_t i = 0; i < Pos.size(); i++)
-            Pos[i] = R * Pos[i];
-    }
-
-public:
-
     static Eigen::Vector3d ToEigenVect(const std::vector<double >& P)
     {
         assert(P.size() == 3);//must have x,y and z
@@ -109,6 +73,42 @@ public:
         return ret;
     }
 
+    static std::vector<double > ToSTDVect(const Eigen::Vector3d& P)
+    {
+        std::vector<double > ret;
+        ret.push_back(P[0]);
+        ret.push_back(P[1]);
+        ret.push_back(P[2]);
+        return ret;
+    }
+
+    static std::vector<std::vector<double > > ToSTDVect(const std::vector<Eigen::Vector3d>& P)
+    {
+        std::vector<std::vector<double > > ret;
+        for (size_t i = 0; i < P.size(); i++)
+            ret.push_back(ToSTDVect(P[i]));
+        return ret;
+    }
+
+    static void ApplyTranslation(std::vector<Eigen::Vector3d>& Pos,
+        const Eigen::Vector3d& t)
+    {
+        for (size_t i = 0; i < Pos.size(); i++)
+        {
+            Pos[i][0] += t[0];
+            Pos[i][1] += t[1];
+            Pos[i][2] += t[2];
+        }
+    }
+
+    static void ApplyRotation(std::vector<Eigen::Vector3d>& Pos, const Eigen::Matrix3d& R)
+    {
+        for (size_t i = 0; i < Pos.size(); i++)
+            Pos[i] = R * Pos[i];
+    }
+
+public:
+
     static void ComputeLeastSquaresRigidMotion(const std::vector<std::vector<double > >& pFix,
         const std::vector<std::vector<double > >& pMov,
         Eigen::Matrix3d& R,
@@ -120,65 +120,56 @@ public:
         pFixE = ToEigenVect(pFix);
         pMovE = ToEigenVect(pMov);
 
-        ComputeLeastSquaresRigidMotion(pFixE, pMovE, R, t);
+        ComputeLeastSquaresRigidMotionEigen(pFixE, pMovE, R, t);
     }
+
+    static void ApplyTrasformRigidMatch(std::vector<std::vector<double > >& p,
+        const Eigen::Matrix3d& R,
+        const Eigen::Vector3d& t)
+    {
+        std::vector<Eigen::Vector3d>  pE;
+
+        pE = ToEigenVect(p);
+
+
+        ApplyRotation(pE, R);
+        ApplyTranslation(pE, t);
+
+        p = ToSTDVect(pE);
+    }
+
+    //    static void TrasformRigidMatch(const std::vector<std::vector<double > >  &pFix,
+    //                                   std::vector<std::vector<double > >  &pMov)
+    //    {
+    //        assert(pFix.size()==pMov.size());
+    //        std::vector<Eigen::Vector3d>  pFixE,pMovE;
+
+    //        pFixE=ToEigenVect(pFix);
+    //        pMovE=ToEigenVect(pMov);
+
+    //        Eigen::Matrix3d R;
+    //        Eigen::Vector3d t;
+    //        ComputeLeastSquaresRigidMotion(pFixE,pMovE,R,t);
+
+    //        ApplyRotation(pMovE,R);
+    //        ApplyTranslation(pMovE,t);
+
+    //        pMov=ToSTDVect(pMovE);
+
+    //    }
 
     static void TrasformRigidMatch(const std::vector<std::vector<double > >& pFix,
         std::vector<std::vector<double > >& pMov)
     {
         assert(pFix.size() == pMov.size());
-        std::vector<Eigen::Vector3d>  pFixE, pMovE;
 
-        pFixE = ToEigenVect(pFix);
-        pMovE = ToEigenVect(pMov);
 
         Eigen::Matrix3d R;
         Eigen::Vector3d t;
-        ComputeLeastSquaresRigidMotion(pFixE, pMovE, R, t);
+        ComputeLeastSquaresRigidMotion(pFix, pMov, R, t);
 
-        ApplyRotation(pMovE, R);
-        ApplyTranslation(pMovE, t);
-
-        pMov = ToSTDVect(pMovE);
-
+        ApplyTrasformRigidMatch(pMov, R, t);
     }
 
-    static void TransformRigidMatchFromStoredValues(const std::vector<std::vector<double > >& pFix,
-        std::vector<std::vector<double > >& pMov, Eigen::Matrix3d R, Eigen::Vector3d t)
-    {
-        assert(pFix.size() == pMov.size());
-        std::vector<Eigen::Vector3d>  pFixE, pMovE;
-
-        pFixE = ToEigenVect(pFix);
-        pMovE = ToEigenVect(pMov);
-
-        ApplyRotation(pMovE, R);
-        ApplyTranslation(pMovE, t);
-
-        pMov = ToSTDVect(pMovE);
-    }
-
-    struct Alignment
-    {
-        Eigen::Matrix3d rotation;
-        Eigen::Vector3d translation;
-    };
-
-    static Alignment GetAlignment(const std::vector<std::vector<double > >& pFix,
-        std::vector<std::vector<double > >& pMov) 
-    {
-        assert(pFix.size() == pMov.size());
-        std::vector<Eigen::Vector3d>  pFixE, pMovE;
-
-        pFixE = ToEigenVect(pFix);
-        pMovE = ToEigenVect(pMov);
-
-        Eigen::Matrix3d R;
-        Eigen::Vector3d t;
-        ComputeLeastSquaresRigidMotion(pFixE, pMovE, R, t);
-
-        Alignment result = { R, t };
-        return result;
-    }
 };
 #endif
