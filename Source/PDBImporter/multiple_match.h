@@ -12,7 +12,8 @@ inline double Distance(const std::vector<double> &P0,
     double XDiff=P0[0]-P1[0];
     double YDiff=P0[1]-P1[1];
     double ZDiff=P0[2]-P1[2];
-    return sqrt(XDiff*XDiff+YDiff*YDiff+ZDiff*ZDiff);
+    //return sqrt(XDiff*XDiff+YDiff*YDiff+ZDiff*ZDiff);
+    return XDiff * XDiff + YDiff * YDiff + ZDiff * ZDiff;
 }
 
 class MultipleMatch

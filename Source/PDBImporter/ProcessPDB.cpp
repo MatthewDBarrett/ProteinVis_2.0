@@ -429,7 +429,7 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
     int atomsInMol = 0;
 
     for (int i = 0; i < storedProteins.Num(); i++) {
-        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+        MMatch.GetSurtedSequencePoint(target, i, curr_label, curr_error, TransfPoint);
 
         selectedProtein = storedProteins[curr_label];
 
