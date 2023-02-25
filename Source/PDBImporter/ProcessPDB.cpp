@@ -106,6 +106,63 @@ void AProcessPDB::ProcessPDBWithoutRendering(FString fileName) {
     }
 }
 
+void AProcessPDB::ProcessPDBWithoutRendering2(FString fileName) {
+
+    moleculeFileName = fileName;
+
+    aMolecules.Empty();
+
+    FString LeftS;
+    FString RightS;
+
+    proteinsFolderPath.Split(TEXT(":"), &LeftS, &RightS);
+
+    //FString directory = FPaths::ProjectContentDir();
+    FString directory = LeftS;
+    FString atomData;
+    IPlatformFile& file = FPlatformFileManager::Get().GetPlatformFile();
+
+    if (file.CreateDirectory(*directory)) {
+
+        FString myFile = proteinsFolderPath + "/" + fileName + ".pdb";
+        FFileHelper::LoadFileToString(atomData, *myFile);
+
+        TArray<FString> stringRecords;
+        atomData.ParseIntoArray(stringRecords, TEXT(" "), true);
+
+        TArray<FString> moleculeStrings;
+
+        for (int32 i = 0; i < stringRecords.Num(); i++) {
+
+            FString segment = stringRecords[i];
+
+            moleculeStrings.Add(segment);
+
+            if (segment.Contains("TER") && segment.Contains("\n") && !segment.Contains("MAS")) {
+
+                FActorSpawnParameters SpawnParams;
+                FVector pos = FVector(0, 0, 0);
+                FRotator rot = FRotator(0, 0, 0);
+
+                moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
+                moleculePointer = Cast<AMolecule>(moleculeActor);
+
+                moleculePointer->ConvertMoleculeWithoutRendering(moleculeStrings);
+
+                aMolecules.Add(moleculePointer);
+
+                //UE_LOG(LogTemp, Warning, TEXT("Added Molecule: %s"), *moleculePointer->GetFileName() );
+
+                moleculeStrings = TArray<FString>();	//clear array
+            }
+        }
+    }
+}
+
+void AProcessPDB::SetFolderDirectory(FString ProteinsFolderPath) {
+    proteinsFolderPath = ProteinsFolderPath;
+}
+
 void AProcessPDB::RenderMolecules(bool isRenderingConnections) {
     for (int i = 0; i < aMolecules.Num(); i++) {
         aMolecules[i]->RenderMolecule(colours[i], isRenderingConnections);

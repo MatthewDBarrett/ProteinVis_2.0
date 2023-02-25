@@ -74,6 +74,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ProcessPDBWithoutRendering(FString fileName);
 
+	UFUNCTION(BlueprintCallable)
+	void ProcessPDBWithoutRendering2(FString fileName);
+
+	UFUNCTION(BlueprintCallable)
+	void SetFolderDirectory(FString ProteinsFolderPath);
+
 	//Render molecules after running the ProcessPDBWithoutRendering Function
 	UFUNCTION(BlueprintCallable)
 	void RenderMolecules(bool isRenderingConnections);
@@ -180,6 +186,8 @@ public:
 	TArray<FMolPositions> GetAtomPositions(AProcessPDB* protein);
 
 	FString folderName;
+
+	FString proteinsFolderPath;
 
 	FString moleculeFileName;
 
