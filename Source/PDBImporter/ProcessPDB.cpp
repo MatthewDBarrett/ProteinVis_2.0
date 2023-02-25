@@ -144,8 +144,12 @@ void AProcessPDB::ProcessPDBWithoutRendering2(FString fileName) {
                 FVector pos = FVector(0, 0, 0);
                 FRotator rot = FRotator(0, 0, 0);
 
-                moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
-                moleculePointer = Cast<AMolecule>(moleculeActor);
+                FTransform transform = FTransform(rot, pos);
+
+                moleculePointer = Cast<AMolecule>(UPoolManagerBPLibrary::SpawnActor(this, myMoleculeToSpawn, transform));
+
+                //moleculeActor = GetWorld()->SpawnActor<AActor>(myMoleculeToSpawn, pos, rot, SpawnParams);
+                //moleculePointer = Cast<AMolecule>(moleculeActor);
 
                 moleculePointer->ConvertMoleculeWithoutRendering(moleculeStrings);
 
