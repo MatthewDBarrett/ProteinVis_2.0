@@ -3,7 +3,7 @@
 Second iteration of the Protein Visualization tool
 Built with Unreal Engine 4.25.4
 
-Installatio Instrucitons
+Installation Instrucitons
 
 Copy socketio-client-ue4 to Plugins folder
 
