@@ -661,6 +661,58 @@ TArray<AProcessPDB*> AProcessPDB::GenerateBlendFrames(AProcessPDB* proteinB, int
     return blendedProteins;
 }
 
+void AProcessPDB::BlendProteinByFrame(AProcessPDB* proteinB, int32 frame) {
+    TArray<FMolPositions> proteinAPositions = this->GetAtomPositions(this);
+    TArray<FMolPositions> proteinBPositions = this->GetAtomPositions(proteinB);
+
+    TArray<FMolPositions> blendedPositions;
+
+    TArray<AMolecule*> mols = this->GetAMolecules();
+
+    for (int i = 0; i < mols.Num(); i++) {
+        FMolPositions positions;
+
+        for (int j = 0; j < mols[i]->GetNumAtoms(); j++) {
+            double x1 = proteinAPositions[i].moleculePositions[j].X;
+            double y1 = proteinAPositions[i].moleculePositions[j].Y;
+            double z1 = proteinAPositions[i].moleculePositions[j].Z;
+
+            double x2 = proteinBPositions[i].moleculePositions[j].X;
+            double y2 = proteinBPositions[i].moleculePositions[j].Y;
+            double z2 = proteinBPositions[i].moleculePositions[j].Z;
+
+            double newX = x1 + (((x2 - x1) / (frame + 1)) * (i + 1));
+            double newY = y1 + (((y2 - y1) / (frame + 1)) * (i + 1));
+            double newZ = z1 + (((z2 - z1) / (frame + 1)) * (i + 1));
+
+            positions.moleculePositions.Add(FVector(newX, newY, newZ));
+        }
+
+        blendedPositions.Add( positions );
+    }
+
+    std::vector<std::vector<std::vector<double>>> moleculePositions;
+
+    moleculePositions.resize(mols.Num());
+
+    for (int i = 0; i < mols.Num(); i++) {
+        AMolecule* mol = mols[i];
+        int atomCount = mol->GetAtoms().Num();
+
+        moleculePositions[i].resize( atomCount );
+
+        for (int j = 0; j < atomCount; j++) {
+            moleculePositions[i][j].push_back(blendedPositions[i].moleculePositions[j].X);
+            moleculePositions[i][j].push_back(blendedPositions[i].moleculePositions[j].Y);
+            moleculePositions[i][j].push_back(blendedPositions[i].moleculePositions[j].Z);
+        }
+    }
+
+    for (int i = 0; i < mols.Num(); i++) {
+        this->UpdateMolecule(mols[i], moleculePositions[i], i);
+    }
+}
+
 void AProcessPDB::GenerateMoleculeColours(bool isStatic) {
     if (isStatic) {
         colours.Add(FVector(96, 207, 255));
@@ -729,6 +781,8 @@ void AProcessPDB::UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>
     moleculePointer->CreateMoleculeFromAtoms(mol->atoms, colours[molIndex], false);
 
     moleculePointer->SetPosition(FVector(12000, 0, 0));
+
+    mol->GetAtomsPointer()->Destroy();
 
     //mol->ColourChain( colours[molIndex] );
 

@@ -164,6 +164,9 @@ public:
 	TArray<AProcessPDB*> GenerateBlendFrames(AProcessPDB* proteinB, int32 frames);
 
 	UFUNCTION(BlueprintCallable)
+	void BlendProteinByFrame(AProcessPDB* proteinB, int32 frame);
+
+	UFUNCTION(BlueprintCallable)
 	void GenerateMoleculeColours(bool isStatic);
 
 	void GenerateBlendFrameColours();
