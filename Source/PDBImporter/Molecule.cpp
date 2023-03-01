@@ -116,6 +116,24 @@ void AMolecule::CreateNonStandardConnections() {
 
 TArray<Atom> AMolecule::GetAtoms() { return atoms; }
 
+void AMolecule::MoveAtoms(std::vector<std::vector<double>> atomPositions, int moleculeIndex) {
+	for (int i = 0; i < atoms.Num(); i++) {
+		atoms[i].SetAtomPosition(atomPositions[i]);
+	}
+
+	this->SetProteinCentre();
+
+	double atomSize;
+
+	for (int i = 0; i < atoms.Num(); i++) {
+		Atom atom = atoms[i];
+
+		atomSize = (atom.GetRadius() * atomScale) * simulationScale;
+
+		meshPointer->UpdateAtomPosition(atomPositions, atomSize, i, proteinCentre, simulationScale);
+	}
+}
+
 void AMolecule::SetAtomSizes() {
 	FString directory = FPaths::ProjectContentDir();
 	FString atomData;
@@ -227,9 +245,12 @@ void AMolecule::ColourChain(FVector colour) {
 }
 
 void AMolecule::SpawnTempAtoms() {
+	FVector position;
+	double size;
+
 	for (Atom atom : atoms) {
-		FVector position = FVector(atom.GetXPos() * simulationScale, atom.GetYPos() * simulationScale, atom.GetZPos() * simulationScale);
-		double size = ((atom.GetRadius() * atomScale) * simulationScale);
+		position = FVector(atom.GetXPos() * simulationScale, atom.GetYPos() * simulationScale, atom.GetZPos() * simulationScale);
+		size = ((atom.GetRadius() * atomScale) * simulationScale);
 
 		this->SpawnSphere(position, size, atom.GetElementSymbol());
 	}
@@ -644,30 +665,41 @@ float AMolecule::GetProteinSize() {
 	return result;
 }
 
+void AMolecule::SaveCurrentAtomPositions() {
+	originalAtomPositions = this->GetAtomPositions();
+}
+
 void AMolecule::SpawnAtoms() {
 	int32 count = 1;
+	FVector position;
+	double size;
+	FRotator rot;
+	FVector scale;
+	FTransform transform;
+	int32 atomIndex;
+	FVector atomColour;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(atoms.Num()));
 	for (Atom atom : atoms) {
 		//UE_LOG(LogTemp, Warning, TEXT("atom Name: %s"), *atom.GetElementSymbol());
 
-		FVector position = FVector(atom.GetXPos() - proteinCentre.X, atom.GetYPos() - proteinCentre.Y, atom.GetZPos() - proteinCentre.Z);
+		position = FVector(atom.GetXPos() - proteinCentre.X, atom.GetYPos() - proteinCentre.Y, atom.GetZPos() - proteinCentre.Z);
 		position = FVector(position.X * simulationScale, position.Y * simulationScale, position.Z * simulationScale);
-		double size = (atom.GetRadius() * atomScale) * simulationScale;
+		size = (atom.GetRadius() * atomScale) * simulationScale;
 
 		//this->SpawnSphere(position, size, atom.GetElementSymbol());
 		
-		FRotator rot = FRotator(0, 0, 0);
-		FVector scale = FVector(size, size, size);
+		rot = FRotator(0, 0, 0);
+		scale = FVector(size, size, size);
 		
-		FTransform transform = FTransform(rot, position, scale);
+		transform = FTransform(rot, position, scale);
 		
 		if (meshPointer != nullptr) {
 			meshPointer->InstanceAtom(transform);
 
-			int32 atomIndex = atomTypes.Find(atom.GetElementSymbol());
+			atomIndex = atomTypes.Find(atom.GetElementSymbol());
 
 			if ( (atomIndex - 1) < atomColours.Num() ) {
-				FVector atomColour = atomColours[atomIndex];
+				atomColour = atomColours[atomIndex];
 
 				meshPointer->SetCustomData(count, 0, atomColour.X / 255, true);
 
@@ -774,8 +806,10 @@ void AMolecule::SpawnCylinder(FVector atomPos1, FVector atomPos2) {
 void AMolecule::SetProteinCentre() {
 	FVector sumVector = FVector(0, 0, 0);
 
+	FVector atomPos;
+
 	for (Atom atom : atoms) {
-		FVector atomPos = atom.GetPosition();
+		atomPos = atom.GetPosition();
 		sumVector = FVector((sumVector.X + atomPos.X), (sumVector.Y + atomPos.Y), (sumVector.Z + atomPos.Z));
 	}
 
@@ -804,6 +838,10 @@ std::vector<std::vector<double>> AMolecule::GetAtomPositions() {
 	}
 
 	return atomPositions;
+}
+
+std::vector<std::vector<double>> AMolecule::GetOriginalAtomPositions() {
+	return this->originalAtomPositions;
 }
 
 std::vector<std::vector<double>> AMolecule::GetPointMatchAlignment(AMolecule* fixedMol) {

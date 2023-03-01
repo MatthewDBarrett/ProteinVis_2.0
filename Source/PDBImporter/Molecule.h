@@ -49,6 +49,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetProteinSize();
 
+	void SaveCurrentAtomPositions();
+
 	UFUNCTION(BlueprintCallable)
 	AInstancedStaticMeshActor* GetAtomsPointer();
 
@@ -56,6 +58,8 @@ public:
 	ACylinderISMA* GetConnectionsPointer();
 
 	std::vector<std::vector<double>> GetAtomPositions();
+
+	std::vector<std::vector<double>> GetOriginalAtomPositions();
 
 	std::vector<std::vector<double>> GetPointMatchAlignment(AMolecule* fixedMol);
 
@@ -116,6 +120,8 @@ public:
 
 	TArray<Atom> GetAtoms();
 
+	void MoveAtoms(std::vector<std::vector<double>> atomPositions, int moleculeIndex);
+
 	FString moleculeName = "";
 
 	int32 simulationScale = 50;
@@ -162,6 +168,8 @@ public:
 	int32 connectionCount;
 
 	int32 molIndex;
+
+	std::vector<std::vector<double>> originalAtomPositions;
 
 protected:
 	// Called when the game starts or when spawned

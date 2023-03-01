@@ -175,10 +175,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HideProtein(AProcessPDB* protein, bool isHidden);
+
+	UFUNCTION(BlueprintCallable)
+	void SaveAtomPositions();
 	
 	void HideMolecule(AMolecule* mol, bool isHidden);
 
 	void UpdateMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
+
+	void ChangeAtomPositions(AProcessPDB* protein, std::vector<std::vector<std::vector<double>>> atomPositions);
 
 	AMolecule* GetUpdatedMolecule(AMolecule* mol, std::vector<std::vector<double>> atomPositions, int32 molIndex);
 
@@ -187,6 +192,8 @@ public:
 	double GetSquaredDistanceSum(std::vector<std::vector<double>> fixedMol, std::vector<std::vector<double>> alignedMol);
 
 	TArray<FMolPositions> GetAtomPositions(AProcessPDB* protein);
+
+	TArray<FMolPositions> GetOriginalAtomPositions(AProcessPDB* protein);
 
 	FString folderName;
 

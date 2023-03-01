@@ -19,6 +19,10 @@ public:
 
 	void RemoveInitialInstance();
 
+	void RemoveAllIntances();
+
+	void UpdateAtomPosition(std::vector<std::vector<double>> atomPositions, double atomSize, int atomIndex, FVector proteinCentre, int32 simulationScale);
+
 	void SetCustomData(int32 index, int32 dataIndex, double dataValue, bool stateDirty);
 
 	void SetPosition(FVector position);
