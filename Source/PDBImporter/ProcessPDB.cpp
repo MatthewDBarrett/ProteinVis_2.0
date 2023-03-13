@@ -756,6 +756,29 @@ void AProcessPDB::SaveAtomPositions() {
     }
 }
 
+TMap<int, int> AProcessPDB::SortFloatMap(TMap<int, float> floatMap) {
+    TArray<float> sortedFloats;
+    TMap<int, int> tempMap;
+
+    int n = floatMap.Num();
+
+    for (int i = 0; i < n; i++)
+        sortedFloats.Add(floatMap.FindRef(i));
+
+    sortedFloats.Sort();
+
+    float tempFloat;
+    const int* index;
+
+    for (int i = n-1; i >= 0; i--) {
+        tempFloat = sortedFloats[i];
+        index = floatMap.FindKey(tempFloat);
+        tempMap.Add(i, *index);
+    }
+
+    return tempMap;
+}
+
 void AProcessPDB::HideMolecule(AMolecule* mol, bool isHidden){
     mol->GetAtomsPointer()->SetActorHiddenInGame(isHidden);
     mol->GetConnectionsPointer()->SetActorHiddenInGame(isHidden);

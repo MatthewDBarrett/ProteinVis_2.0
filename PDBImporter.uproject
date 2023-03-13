@@ -62,6 +62,11 @@
 			"Name": "EasyFileDialog",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/bcf64fe2e00c48189d8385a9c39b6e61"
+		},
+		{
+			"Name": "EasyJsonParser",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/22108e274b5d4e5ab92c0a7b961caf13"
 		}
 	]
 }

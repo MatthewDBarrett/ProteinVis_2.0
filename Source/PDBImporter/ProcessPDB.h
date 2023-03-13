@@ -178,6 +178,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveAtomPositions();
+
+	UFUNCTION(BlueprintCallable)
+	TMap<int, int> SortFloatMap(TMap<int, float> floatMap);
 	
 	void HideMolecule(AMolecule* mol, bool isHidden);
 
