@@ -293,8 +293,7 @@ public:
 
         InitSortStepByStep();
 
-
-        //InitSortedByRank();
+        InitSortedByRank();
     }
 
     //return the index-sorted from the reference Ref index

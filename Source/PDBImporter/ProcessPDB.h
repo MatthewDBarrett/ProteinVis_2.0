@@ -223,7 +223,7 @@ public:
 
 	TArray<AProcessPDB*> storedProteins;
 
-	std::vector<double> setRanking;
+	std::vector<double> AlphaFoldRanking;
 
 protected:
 	// Called when the game starts or when spawned

@@ -469,11 +469,7 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     //    }
     //}
 
-    std::vector< double > ranking{ 0,1,2,3,4 };
-
-
-
-    MMatch.InitMatches(PClouds, ranking);
+    MMatch.InitMatches(PClouds, AlphaFoldRanking);
 }
 
 TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
@@ -788,11 +784,14 @@ TMap<int, int> AProcessPDB::SortFloatMap(TMap<int, float> floatMap) {
 }
 
 void AProcessPDB::ComputeRanking(TMap<int, float> floatMap) {
+
     TMap<int, int> sortedMap = this->SortFloatMap(floatMap);
 
-    for (const TPair<int, int>& pair : sortedMap) {
-        UE_LOG(LogTemp, Warning, TEXT("Index: % d rank : % d"), pair.Key, pair.Value);
-    }
+    //Resize vector array to store the given amount of proteins in the ranking order
+    AlphaFoldRanking.resize(floatMap.Num());
+
+    for (const TPair<int, int>& pair : sortedMap)
+        AlphaFoldRanking.at(pair.Key) = pair.Value;
 }
 
 void AProcessPDB::HideMolecule(AMolecule* mol, bool isHidden){
