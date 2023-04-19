@@ -403,14 +403,14 @@ TArray<AMolecule*> AProcessPDB::GetAlignedMoleculesWithoutRendering3(TArray<AMol
 }
 
 void AProcessPDB::MultiMatchTest() {
-    size_t curr_label;
+    /*size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
     for (int i = 0; i < storedProteins.Num(); i++) {
-        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+        MMatch.GetSortedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
         UE_LOG(LogTemp, Warning, TEXT("Label: %d  error: %f"), curr_label, curr_error);
-    }
+    }*/
 }
 
 void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
@@ -469,10 +469,15 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     //    }
     //}
 
-    MMatch.InitMatches(PClouds);
+    std::vector< double > ranking{ 0,1,2,3,4 };
+
+
+
+    MMatch.InitMatches(PClouds, ranking);
 }
 
 TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
+    //TEMPORARY
     size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
@@ -490,7 +495,8 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
     int atomsInMol = 0;
 
     for (int i = 0; i < storedProteins.Num(); i++) {
-        MMatch.GetSurtedSequencePoint(target, i, curr_label, curr_error, TransfPoint);
+        //TEMPORARY
+        MMatch.GetSortedSequencePoint(target, i, curr_label, curr_error, TransfPoint, 0);
 
         selectedProtein = storedProteins[curr_label];
 
@@ -547,12 +553,14 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
     TArray<int> nearestProteins;
 
+    //TEMPORARY
     size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
     for (int i = 0; i < proteinCount; i++) {
-        MMatch.GetSurtedSequencePoint(0, i, curr_label, curr_error, TransfPoint);
+        //TEMPORARY
+        MMatch.GetSortedSequencePoint(0, i, curr_label, curr_error, TransfPoint, 0);
         nearestProteins.Add(curr_label);
     }
 
@@ -777,6 +785,14 @@ TMap<int, int> AProcessPDB::SortFloatMap(TMap<int, float> floatMap) {
     }
 
     return tempMap;
+}
+
+void AProcessPDB::ComputeRanking(TMap<int, float> floatMap) {
+    TMap<int, int> sortedMap = this->SortFloatMap(floatMap);
+
+    for (const TPair<int, int>& pair : sortedMap) {
+        UE_LOG(LogTemp, Warning, TEXT("Index: % d rank : % d"), pair.Key, pair.Value);
+    }
 }
 
 void AProcessPDB::HideMolecule(AMolecule* mol, bool isHidden){

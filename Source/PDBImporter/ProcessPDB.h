@@ -181,6 +181,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TMap<int, int> SortFloatMap(TMap<int, float> floatMap);
+
+	UFUNCTION(BlueprintCallable)
+	void ComputeRanking(TMap<int, float> floatMap);
 	
 	void HideMolecule(AMolecule* mol, bool isHidden);
 
@@ -219,6 +222,8 @@ public:
 	int32 proteinCount;
 
 	TArray<AProcessPDB*> storedProteins;
+
+	std::vector<double> setRanking;
 
 protected:
 	// Called when the game starts or when spawned
