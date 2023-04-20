@@ -296,6 +296,16 @@ public:
         InitSortedByRank();
     }
 
+    //for each point cloud, for each vertex X,Y,Z
+    void InitMatches(const std::vector<std::vector<std::vector<double > > >& _PointConfig)
+    {
+        PointConfig = _PointConfig;
+
+        InitSortFromFirst();
+
+        InitSortStepByStep();
+    }
+
     //return the index-sorted from the reference Ref index
     void GetSortedSequencePoint(const size_t RefIndex,
         const size_t CurrIndex,
@@ -352,7 +362,6 @@ public:
         //then transform
         PointMatch::ApplyTrasformRigidMatch(TransfPoint, currTrans.R, currTrans.T);
     }
-
 };
 
 #endif

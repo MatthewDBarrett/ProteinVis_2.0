@@ -413,7 +413,7 @@ void AProcessPDB::MultiMatchTest() {
     }*/
 }
 
-void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
+void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins, bool rankingLoaded) {
     storedProteins = proteins;
 
     std::vector<std::vector<std::vector<double>>> PClouds;
@@ -469,14 +469,13 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     //    }
     //}
 
-    MMatch.InitMatches(PClouds, AlphaFoldRanking);
+    if ( rankingLoaded )
+        MMatch.InitMatches(PClouds, AlphaFoldRanking);
+    else
+        MMatch.InitMatches(PClouds);
 }
 
 TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 sortType) {
-    //TEMPORARY
-    size_t curr_label;
-    double curr_error;
-    std::vector<std::vector<double > > TransfPoint;
 
     std::vector<std::vector<std::vector<std::vector<double > >>> proteinCloud;              //Proteins, Molecules, Atoms, Positions
 
@@ -484,46 +483,81 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 so
 
     proteinCloud.resize(storedProteins.Num());
 
+    size_t curr_label;
+    double curr_error;
+    std::vector<std::vector<double > > TransfPoint;
+
     std::vector<int> matchOrder;
 
     int atomCount = 0;
     int count = 0;
-    int atomsInMol = 0;
+    int atomsInMol = 0;    
 
-    for (int i = 0; i < storedProteins.Num(); i++) {
-        //TEMPORARY
-        MMatch.GetSortedSequencePoint(target, i, curr_label, curr_error, TransfPoint, sortType);
+    if (sortType == 2) {
+        for (int i = 0; i < storedProteins.Num(); i++) {
+            MMatch.GetSortedSequencePoint(i, 0, curr_label, curr_error, TransfPoint, sortType);
 
-        selectedProtein = storedProteins[curr_label];
+            selectedProtein = storedProteins[curr_label];
 
-        matchOrder.push_back(curr_label);
+            matchOrder.push_back(curr_label);
 
-        atomCount = TransfPoint.size();
+            atomCount = TransfPoint.size();
 
-        proteinCloud[curr_label].resize(selectedProtein->GetAMolecules().Num());
+            proteinCloud[curr_label].resize(selectedProtein->GetAMolecules().Num());
 
-        count = 0;
-        atomsInMol = 1;
+            count = 0;
+            atomsInMol = 1;
 
-        proteinCloud[curr_label][0].resize(atomCountsPerMol[0]);
+            proteinCloud[curr_label][0].resize(atomCountsPerMol[0]);
 
-        for (int j = 0; j < atomCount; j++) {
-            
-            if (atomsInMol - 1 == atomCountsPerMol[count]) {
-                count++;
-                atomsInMol = 1;
-                proteinCloud[curr_label][count].resize(atomCountsPerMol[count]);
+            for (int j = 0; j < atomCount; j++) {
+
+                if (atomsInMol - 1 == atomCountsPerMol[count]) {
+                    count++;
+                    atomsInMol = 1;
+                    proteinCloud[curr_label][count].resize(atomCountsPerMol[count]);
+                }
+
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
+
+                atomsInMol++;
             }
+        }  
+    } else {
+        for (int i = 0; i < storedProteins.Num(); i++) {
+            MMatch.GetSortedSequencePoint(target, i, curr_label, curr_error, TransfPoint, sortType);
 
-            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
-            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
-            proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
+            selectedProtein = storedProteins[curr_label];
 
-            atomsInMol++;
+            matchOrder.push_back(curr_label);
+
+            atomCount = TransfPoint.size();
+
+            proteinCloud[curr_label].resize(selectedProtein->GetAMolecules().Num());
+
+            count = 0;
+            atomsInMol = 1;
+
+            proteinCloud[curr_label][0].resize(atomCountsPerMol[0]);
+
+            for (int j = 0; j < atomCount; j++) {
+
+                if (atomsInMol - 1 == atomCountsPerMol[count]) {
+                    count++;
+                    atomsInMol = 1;
+                    proteinCloud[curr_label][count].resize(atomCountsPerMol[count]);
+                }
+
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][0]);
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][1]);
+                proteinCloud[curr_label][count][atomsInMol - 1].push_back(TransfPoint[j][2]);
+
+                atomsInMol++;
+            }
         }
     }
-
-
 
     for (int i = 0; i < storedProteins.Num(); i++) {
         selectedProtein = storedProteins[i];
@@ -531,9 +565,9 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 so
         TArray<AMolecule*> mols = selectedProtein->GetAMolecules();
 
         for (int j = 0; j < mols.Num(); j++) {
-            std::vector<std::vector<double>> atomPositions = proteinCloud[i][j];
-
-            this->GetUpdatedMoleculeWithoutRendering(mols[j], atomPositions, 0);
+            //std::vector<std::vector<double>> atomPositions = proteinCloud[i][j];
+            //TEMPORARY
+            //this->GetUpdatedMoleculeWithoutRendering(mols[j], atomPositions, 0);
         }
     }
 
@@ -787,13 +821,16 @@ TMap<int, int> AProcessPDB::SortFloatMap(TMap<int, float> floatMap) {
 
 void AProcessPDB::ComputeRanking(TMap<int, float> floatMap) {
 
-    TMap<int, int> sortedMap = this->SortFloatMap(floatMap);
-
     //Resize vector array to store the given amount of proteins in the ranking order
     AlphaFoldRanking.resize(floatMap.Num());
 
-    for (const TPair<int, int>& pair : sortedMap)
+    for (const TPair<int, float>& pair : floatMap)
         AlphaFoldRanking.at(pair.Key) = pair.Value;
+
+    //TMap<int, int> sortedMap = this->SortFloatMap(floatMap);
+
+    //for (const TPair<int, int>& pair : sortedMap)
+    //    AlphaFoldRanking.at(pair.Key) = pair.Value;
 }
 
 void AProcessPDB::HideMolecule(AMolecule* mol, bool isHidden){

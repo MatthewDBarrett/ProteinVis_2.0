@@ -146,7 +146,7 @@ public:
 	void MultiMatchTest();
 
 	UFUNCTION(BlueprintCallable)
-	void InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
+	void InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins, bool rankingLoaded);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<AProcessPDB*> GetNearestMatchProteins(int32 target, int32 sortType);
