@@ -565,9 +565,8 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 so
         TArray<AMolecule*> mols = selectedProtein->GetAMolecules();
 
         for (int j = 0; j < mols.Num(); j++) {
-            //std::vector<std::vector<double>> atomPositions = proteinCloud[i][j];
-            //TEMPORARY
-            //this->GetUpdatedMoleculeWithoutRendering(mols[j], atomPositions, 0);
+            std::vector<std::vector<double>> atomPositions = proteinCloud[i][j];
+            this->GetUpdatedMoleculeWithoutRendering(mols[j], atomPositions, 0);
         }
     }
 
@@ -581,17 +580,13 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 so
 }
 
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
-    UE_LOG(LogTemp, Warning, TEXT("CALLING FUNCTION"));
-
     TArray<int> nearestProteins;
 
-    //TEMPORARY
     size_t curr_label;
     double curr_error;
     std::vector<std::vector<double > > TransfPoint;
 
     for (int i = 0; i < proteinCount; i++) {
-        //TEMPORARY
         MMatch.GetSortedSequencePoint(0, i, curr_label, curr_error, TransfPoint, 0);
         nearestProteins.Add(curr_label);
     }
