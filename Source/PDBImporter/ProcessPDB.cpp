@@ -472,7 +472,7 @@ void AProcessPDB::InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins) {
     MMatch.InitMatches(PClouds, AlphaFoldRanking);
 }
 
-TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
+TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target, int32 sortType) {
     //TEMPORARY
     size_t curr_label;
     double curr_error;
@@ -492,7 +492,7 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
 
     for (int i = 0; i < storedProteins.Num(); i++) {
         //TEMPORARY
-        MMatch.GetSortedSequencePoint(target, i, curr_label, curr_error, TransfPoint, 0);
+        MMatch.GetSortedSequencePoint(target, i, curr_label, curr_error, TransfPoint, sortType);
 
         selectedProtein = storedProteins[curr_label];
 
@@ -547,6 +547,8 @@ TArray<AProcessPDB*> AProcessPDB::GetNearestMatchProteins(int32 target) {
 }
 
 TArray<int> AProcessPDB::GetNearestProteinsByIndex(int32 targetIndex) {
+    UE_LOG(LogTemp, Warning, TEXT("CALLING FUNCTION"));
+
     TArray<int> nearestProteins;
 
     //TEMPORARY

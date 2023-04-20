@@ -149,7 +149,7 @@ public:
 	void InitMultiMatchFromProteins(TArray<AProcessPDB*> proteins);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<AProcessPDB*> GetNearestMatchProteins(int32 target);
+	TArray<AProcessPDB*> GetNearestMatchProteins(int32 target, int32 sortType);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<int> GetNearestProteinsByIndex(int32 targetIndex);
