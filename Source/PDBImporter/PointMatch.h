@@ -1,3 +1,34 @@
+/**********************************************************************************
+ * Point Match
+ * [DEPRECATED]
+ *
+ * Used to align molecules to each other, both in rotation and translation.
+ * ________________________________________________________________________________
+ *
+ * This file is part of the ProteinVis project.
+ *
+ * Author:			Nico Pietroni
+ *
+ * Organisation:	University of Technology Sydney
+ *
+ * ProteinVis. is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * GNU General Public License V3, 29 June 2007.
+ *
+ * ProteinVis. is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * <https://www.gnu.org/licenses/gpl-faq.html/>
+ *
+ * For commercial licensing inquiries and restrictions, please contact either:
+ * matthew.barrett@uts.edu.au
+ * nico.pietroni@uts.edu.au
+ **********************************************************************************/
+
 #ifndef POINT_MATCH
 #define POINT_MATCH
 
