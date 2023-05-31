@@ -4,7 +4,7 @@
  * Handles actor pooling for the following actors:
  * 
  * - Proteins (groups of molecules)
- * - Molecuels 
+ * - Molecules
  * ________________________________________________________________________________
  *
  * This file is part of the ProteinVis project.
